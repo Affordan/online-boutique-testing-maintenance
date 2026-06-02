@@ -1,0 +1,38 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Java / Gradle
+.gradle/
+build/
+target/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test and runtime outputs
+*.log
+*.tmp
+*.jtl
+*.hprof
+
+# Large/generated experiment outputs
+results/**/*.zip
+results/**/*.tar
+results/**/*.tar.gz
+data/**/*.zip
+data/**/*.tar
+data/**/*.tar.gz
+
