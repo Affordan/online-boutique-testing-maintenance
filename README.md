@@ -229,6 +229,36 @@ http://localhost:8080
 
 当页面能够正常打开，并且商品浏览、加入购物车、结账页面能够访问时，说明主系统部署完成。
 
+部署监控组件：
+
+```bash
+bash scripts/deploy_monitoring.sh
+```
+
+访问 Prometheus：
+
+```bash
+bash scripts/port_forward_prometheus.sh
+```
+
+浏览器访问：
+
+```text
+http://localhost:9090
+```
+
+访问 Grafana：
+
+```bash
+bash scripts/port_forward_grafana.sh
+```
+
+浏览器访问：
+
+```text
+http://localhost:3000
+```
+
 ---
 
 ## 7. 部署脚本
@@ -239,6 +269,9 @@ http://localhost:8080
 | `scripts/start_minikube.sh` | 使用 Docker driver 启动本地 Minikube 集群 |
 | `scripts/deploy_online_boutique.sh` | 创建 `online-boutique` 命名空间并部署系统 |
 | `scripts/port_forward_frontend.sh` | 将前端服务转发到本地 `8080` 端口 |
+| `scripts/deploy_monitoring.sh` | 使用 Helm 部署 Prometheus、Grafana 和基础 Kubernetes 监控组件 |
+| `scripts/port_forward_prometheus.sh` | 将 Prometheus 转发到本地 `9090` 端口 |
+| `scripts/port_forward_grafana.sh` | 将 Grafana 转发到本地 `3000` 端口 |
 | `scripts/clean_online_boutique.sh` | 删除 `online-boutique` 命名空间并清理部署 |
 
 若本地集群状态已经混乱，可以执行：
@@ -616,7 +649,7 @@ algo: add isolation forest baseline
 | GitHub 仓库 | 王秀强 | 待完善 |
 | Online-Boutique 部署 | 王秀强 | 进行中 |
 | 新增微服务 | 邓锦尧 | 待开始 |
-| Prometheus + Grafana | 邱俊杰 | 待开始 |
+| Prometheus + Grafana | 邱俊杰 | 进行中 |
 | ChaosMesh | 段坤良 | 待开始 |
 | Selenium + JMeter | 韦厚林 | 待开始 |
 | 异常数据集 + 论文算法 | 任泓旭 | 待开始 |
