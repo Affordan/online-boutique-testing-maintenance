@@ -18,7 +18,7 @@
 
 | 角色 | 成员 | 负责模块 | 主要任务 | 关键产出 |
 | --- | --- | --- | --- | --- |
-| 队长 + A | 你 | 总集成 + Online-Boutique 部署 | 维护仓库结构；确定主方案；部署 Online-Boutique；确认前端、Pod、Service 可用；记录部署问题与解决方案；统筹 README、架构图、任务看板、报告和 PPT | README、部署文档、命令记录、Pod 截图、Service 截图、前端页面截图、最终 PDF/PPT |
+| 队长 + A | 组长 | 总集成 + Online-Boutique 部署 | 维护仓库结构；确定主方案；部署 Online-Boutique；确认前端、Pod、Service 可用；记录部署问题与解决方案；统筹 README、架构图、任务看板、报告和 PPT | README、部署文档、命令记录、Pod 截图、Service 截图、前端页面截图、最终 PDF/PPT |
 | B | 邓锦尧 | 新增微服务开发 | 开发 1-2 个新增服务，推荐 `ops-alert-service` 或 `user-log-service`；编写 Dockerfile、Deployment YAML、Service YAML；保证接口可访问 | FastAPI/Flask 源码、Dockerfile、K8s YAML、接口测试截图 |
 | C | 邱俊杰 | Prometheus + Grafana + 监控看板 | 部署监控组件；接入 Online-Boutique 和新增服务；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板 | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表 |
 | D | 段坤良 | ChaosMesh + 故障实验 | 部署 ChaosMesh；设计 Pod Kill、CPU 压力、网络延迟、网络丢包等故障；记录故障前后现象与恢复情况 | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图 |
@@ -43,57 +43,9 @@
 └─ slides/       # 展示 PPT
 ```
 
-## 02 仓库建立当前状态
+## 快速开始
 
-- 本地 Git 仓库已初始化。
-- 已添加上游仓库地址：
-
-```bash
-git remote add upstream https://github.com/JoinFyc/Online-Boutique.git
-```
-
-如果需要把本地仓库推送到小组 GitHub 仓库，先在 GitHub 创建空仓库，然后执行：
-
-```bash
-git remote add origin https://github.com/<your-org-or-user>/<your-repo>.git
-git branch -M main
-git push -u origin main
-```
-
-## Online-Boutique 源码同步
-
-如果网络可以访问 GitHub，推荐直接克隆目标仓库：
-
-```bash
-git clone https://github.com/JoinFyc/Online-Boutique.git
-```
-
-如果已经在本仓库内初始化，则可以尝试从上游同步：
-
-```bash
-git fetch upstream
-git branch -r
-```
-
-看到上游分支后，按实际分支选择同步方式。例如：
-
-```bash
-git switch -c upstream-source upstream/main
-```
-
-或者：
-
-```bash
-git switch -c upstream-source upstream/release/v0.10.2
-```
-
-之后再把课程目录、README、报告材料合并到小组主分支。
-
-## A 成员优先要做什么
-
-你作为队长 + A，优先完成以下闭环：
-
-1. 确认本地环境版本：
+### 环境要求
 
 ```bash
 docker --version
@@ -103,7 +55,7 @@ helm version
 python --version
 ```
 
-2. 启动 Minikube：
+### 启动 Minikube
 
 ```bash
 minikube start --cpus=4 --memory=4096 --driver=docker
@@ -111,9 +63,9 @@ kubectl get nodes
 kubectl get pods -A
 ```
 
-3. 部署 Online-Boutique。
+### 部署 Online-Boutique
 
-如果源码已经同步到本地，优先使用仓库自带 manifest：
+优先使用本仓库或上游仓库中的 Kubernetes manifest：
 
 ```bash
 kubectl create namespace online-boutique
@@ -123,7 +75,7 @@ kubectl get pods -n online-boutique
 kubectl get svc -n online-boutique
 ```
 
-如果只是为了尽快跑通演示，也可以使用 Google 官方 microservices-demo 的预构建 manifest：
+如需使用 Google 官方 microservices-demo 的预构建 manifest，可执行：
 
 ```bash
 kubectl create namespace online-boutique
@@ -131,40 +83,19 @@ kubectl apply -n online-boutique -f https://github.com/GoogleCloudPlatform/micro
 kubectl wait --for=condition=available --timeout=300s -n online-boutique --all deployments
 ```
 
-4. 访问前端：
+### 访问前端
 
 ```bash
 minikube service frontend-external -n online-boutique
 ```
 
-如果上面的方式不可用，使用端口转发：
+如果上面的方式不可用，可使用端口转发：
 
 ```bash
 kubectl port-forward -n online-boutique svc/frontend 8080:80
 ```
 
 然后访问 <http://localhost:8080>。
-
-5. 保存 A 需要交付的证据：
-
-- `docker --version`、`kubectl version --client`、`minikube version`、`helm version` 截图或命令记录。
-- `kubectl get nodes` 截图。
-- `kubectl get pods -n online-boutique` 截图。
-- `kubectl get svc -n online-boutique` 截图。
-- Online-Boutique 前端页面截图。
-- 部署问题与解决方案记录。
-
-建议把截图放到 `figures/deploy/`，命令记录放到 `results/deploy/`。
-
-## 部署需要 Google 的什么帮助
-
-本作业如果使用 Minikube 本地部署，通常不需要 Google Cloud 账号，也不需要 GKE。Google 主要提供三类帮助：
-
-1. Online-Boutique/microservices-demo 项目源码、Kubernetes manifest 和官方部署说明。
-2. 公开容器镜像或预构建 manifest，便于快速部署到任意 Kubernetes 集群。
-3. 可选的 GKE、Cloud Build、Artifact Registry/GCR 等云资源。如果要在 Google Cloud 上部署真实集群才需要这些；本课程本地 Minikube 跑通一般不需要。
-
-因此，当前最推荐路线是：本地 Docker + Minikube + kubectl + Helm 跑通 Online-Boutique，后续再接 Prometheus/Grafana/ChaosMesh/JMeter/Selenium/Agent。
 
 ## 后续任务看板
 
@@ -182,4 +113,3 @@ kubectl port-forward -n online-boutique svc/frontend 8080:80
 | F | 22-25 | 论文算法复现与结果分析 | 任泓旭 | 待开始 |
 | G | 26-28 | 智能运维 Agent | 队长统筹，全组协作 | 待开始 |
 | H | 29-32 | 报告、PPT、答辩材料收口 | 队长统筹，全组协作 | 待开始 |
-
