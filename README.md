@@ -4,9 +4,7 @@
 
 Online-Boutique 是一个典型的在线商店系统，包含前端、商品目录、购物车、结算、支付、推荐、邮件、广告、负载生成等服务。它的业务关系清楚，服务数量适中，适合用于观察微服务之间的调用关系、运行状态变化和故障传播现象。
 
-本项目采用本地 Kubernetes 环境进行部署，主要使用 Docker、Minikube、kubectl 和 Helm 完成系统运行与管理。我们暂不使用 Google Cloud，原因是课程实验重点在微服务部署、监控、故障注入、自动化测试和异常分析，本地环境已经可以满足实验需求，同时避免云平台账号、计费、权限和网络访问带来的额外成本。
-
-所有成员统一按照本仓库 README 在本地复现环境，部署文件、脚本、测试代码、监控配置和实验结果均在主仓库中维护。这样可以保证实验过程可复现，也便于后续接入 Prometheus、Grafana、ChaosMesh、新增微服务和智能运维模块。
+本项目暂不使用 Google Cloud，采用本地 Kubernetes 环境完成部署。课程实验的重点在于系统部署、测试、维护、故障注入和异常分析，本地 Minikube 环境已经能够满足主要实验需求，同时可以避免云平台账号、计费、权限和网络访问带来的额外成本。所有成员统一按照本仓库说明在本地复现实验环境，保证实验过程可复现、材料可追溯、结果可整合。
 
 ---
 
@@ -77,11 +75,18 @@ online-boutique-testing-maintenance/
 │   └── 09_agent_ops.md
 │
 ├── scripts/
-│   ├── check_env.sh
-│   ├── start_minikube.sh
-│   ├── deploy_online_boutique.sh
-│   ├── port_forward_frontend.sh
-│   └── clean_online_boutique.sh
+│   ├── check_env.ps1
+│   ├── download_online_boutique_manifest.ps1
+│   ├── start_minikube.ps1
+│   ├── deploy_online_boutique.ps1
+│   ├── wait_online_boutique.ps1
+│   ├── preload_images_to_minikube.ps1
+│   ├── port_forward_frontend.ps1
+│   ├── clean_online_boutique.ps1
+│   ├── clean_old_environment.ps1
+│   ├── reset_minikube.ps1
+│   ├── run_fresh_deploy.ps1
+│   └── verify_deployment.ps1
 │
 ├── deploy/
 │   └── online-boutique/
@@ -121,7 +126,7 @@ online-boutique-testing-maintenance/
 │
 ├── results/
 ├── report/
-└── slides/
+└── ppt/
 ```
 
 目录用途说明：
@@ -141,7 +146,7 @@ online-boutique-testing-maintenance/
 | `figures/` | 报告和 PPT 使用的截图 |
 | `results/` | 实验结果表、算法输出、测试结果 |
 | `report/` | 大作业 PDF 报告材料 |
-| `slides/` | 展示 PPT 材料 |
+| `ppt/` | 展示 PPT 材料 |
 
 ---
 
@@ -151,7 +156,8 @@ online-boutique-testing-maintenance/
 
 | 项目 | 推荐配置 |
 |---|---|
-| 操作系统 | Windows 10/11 + WSL2 Ubuntu |
+| 操作系统 | Windows 10/11 |
+| 终端 | Windows PowerShell |
 | CPU | 4 核及以上 |
 | 内存 | 8GB 及以上 |
 | 磁盘 | 至少 20GB 可用空间 |
@@ -161,11 +167,11 @@ online-boutique-testing-maintenance/
 | 测试工具 | Chrome、Selenium、JMeter |
 | 编程环境 | Python 3.10+ |
 
-Windows 环境推荐使用 Git Bash 执行 `scripts/*.sh`。如果使用 WSL2，需要在 Docker Desktop 中开启 WSL integration，并确认 Docker daemon 正在运行。
+本仓库默认使用 PowerShell 脚本，所有部署命令均在 Windows PowerShell 中执行，不再使用 `bash scripts/*.sh`。如果在 PowerShell 中调用 bash，命令会进入 WSL 环境，可能导致 Windows 中已经安装的 Minikube、Helm 无法被识别。
 
 安装后需要确认以下命令可用：
 
-```bash
+```powershell
 docker --version
 kubectl version --client
 minikube version
@@ -174,51 +180,73 @@ git --version
 python --version
 ```
 
+项目统一环境：
+
+```text
+Minikube profile：online-boutique-lab
+Kubernetes namespace：online-boutique
+访问地址：http://localhost:8080
+```
+
 ---
 
 ## 6. 快速运行
 
 克隆仓库：
 
-```bash
-git clone <your-repository-url>
+```powershell
+git clone https://github.com/Affordan/online-boutique-testing-maintenance
 cd online-boutique-testing-maintenance
+```
+
+允许当前 PowerShell 窗口执行本地脚本：
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 检查环境：
 
-```bash
-bash scripts/check_env.sh
+```powershell
+.\scripts\check_env.ps1
 ```
 
-启动 Minikube：
+清理旧环境。该命令会删除本项目旧 profile，并停止默认 `minikube`，避免和以前实验冲突：
 
-```bash
-bash scripts/start_minikube.sh
+```powershell
+.\scripts\clean_old_environment.ps1 -DeleteProjectProfile -StopOldProfile
 ```
 
-部署 Online-Boutique：
+重新拉取部署文件、启动独立 Minikube 环境并提交部署：
 
-```bash
-bash scripts/deploy_online_boutique.sh
+```powershell
+.\scripts\run_fresh_deploy.ps1
+```
+
+如果电脑配置较低，可以使用：
+
+```powershell
+.\scripts\run_fresh_deploy.ps1 -Cpus 2 -Memory 4096
 ```
 
 查看 Pod 状态：
 
-```bash
-kubectl get pods -n online-boutique
+```powershell
+.\scripts\wait_online_boutique.ps1
 ```
 
-查看 Service 状态：
+如果出现 `ErrImagePull` 或 `ImagePullBackOff`，说明 Minikube 节点拉取镜像失败。此时不要重复部署，执行：
 
-```bash
-kubectl get svc -n online-boutique
+```powershell
+.\scripts\preload_images_to_minikube.ps1 -RestartPods
+.\scripts\wait_online_boutique.ps1
 ```
 
-打开前端访问：
+主要服务进入 `Running` 后，新开一个 PowerShell 窗口，进入仓库目录并执行：
 
-```bash
-bash scripts/port_forward_frontend.sh
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\scripts\port_forward_frontend.ps1
 ```
 
 浏览器访问：
@@ -231,20 +259,38 @@ http://localhost:8080
 
 ---
 
-## 7. 部署脚本
+## 7. PowerShell 脚本说明
 
-| 脚本 | 用途 |
+本项目脚本均放在 `scripts/` 目录下。
+
+| 脚本 | 作用 |
 |---|---|
-| `scripts/check_env.sh` | 检查 Docker、kubectl、Minikube、Helm、Git、Python 是否可用 |
-| `scripts/start_minikube.sh` | 使用 Docker driver 启动本地 Minikube 集群 |
-| `scripts/deploy_online_boutique.sh` | 创建 `online-boutique` 命名空间并部署系统 |
-| `scripts/port_forward_frontend.sh` | 将前端服务转发到本地 `8080` 端口 |
-| `scripts/clean_online_boutique.sh` | 删除 `online-boutique` 命名空间并清理部署 |
+| `check_env.ps1` | 检查 Docker、kubectl、Minikube、Helm、Git、Python 是否可用 |
+| `download_online_boutique_manifest.ps1` | 下载 Online-Boutique 的 Kubernetes 部署文件 |
+| `start_minikube.ps1` | 启动 `online-boutique-lab` 独立 Minikube 环境 |
+| `deploy_online_boutique.ps1` | 创建 namespace 并部署 Online-Boutique |
+| `wait_online_boutique.ps1` | 持续观察 Pod 状态 |
+| `preload_images_to_minikube.ps1` | 将 Docker 镜像导入 Minikube，用于处理镜像拉取失败 |
+| `port_forward_frontend.ps1` | 将 frontend 服务转发到 `http://localhost:8080` |
+| `clean_online_boutique.ps1` | 删除 `online-boutique` namespace |
+| `clean_old_environment.ps1` | 清理旧 profile、停止默认 profile |
+| `reset_minikube.ps1` | 删除本项目 Minikube profile |
+| `run_fresh_deploy.ps1` | 完成下载、启动、部署的组合执行 |
+| `verify_deployment.ps1` | 输出当前节点、Pod、Service 状态 |
 
-若本地集群状态已经混乱，可以执行：
+常用命令：
 
-```bash
-minikube delete
+```powershell
+.\scripts\verify_deployment.ps1
+kubectl get pods -n online-boutique
+kubectl get svc -n online-boutique
+```
+
+如果环境已经混乱，可以删除本项目独立环境后重来：
+
+```powershell
+.\scripts\reset_minikube.ps1
+.\scripts\run_fresh_deploy.ps1
 ```
 
 ---
@@ -266,15 +312,27 @@ minikube delete
 部署完成的基本标准：
 
 ```text
-1. Minikube 能正常启动。
-2. online-boutique 命名空间创建成功。
-3. 各个服务 Pod 能进入 Running 状态。
-4. frontend 服务可以通过端口转发访问。
-5. 浏览器可以打开 Online-Boutique 页面。
-6. 商品浏览、购物车、结账页面能够正常访问。
+1. `online-boutique-lab` Minikube 环境启动成功。
+2. `online-boutique` namespace 创建成功。
+3. Online-Boutique 主要 Pod 进入 Running 状态。
+4. `kubectl get svc -n online-boutique` 能看到 frontend 服务。
+5. `port_forward_frontend.ps1` 能正常转发端口。
+6. 浏览器可以打开 `http://localhost:8080`。
+7. 商品浏览、购物车、结账页面能够正常访问。
 ```
 
+本次部署中出现过 Google Artifact Registry 镜像拉取失败，报错表现为：
+
+```text
+ErrImagePull
+ImagePullBackOff
+Get "https://us-central1-docker.pkg.dev/v2/": EOF
+```
+
+处理方法是先用 Windows Docker 拉取镜像，再用 `minikube image load` 导入 `online-boutique-lab`。本仓库已将该处理写入 `preload_images_to_minikube.ps1`，后续成员遇到相同问题时可直接复用。
+
 ---
+
 
 ## 9. 新增微服务设计
 
@@ -613,8 +671,9 @@ algo: add isolation forest baseline
 | 模块 | 负责人 | 状态 |
 |---|---|---|
 | 项目选型 | 王秀强 | 已确定 Online-Boutique |
-| GitHub 仓库 | 王秀强 | 待完善 |
-| Online-Boutique 部署 | 王秀强 | 进行中 |
+| GitHub 仓库 | 王秀强 | 已建立，目录结构已完成 |
+| Online-Boutique 部署 | 王秀强 | 已完成，本地页面可访问 |
+| PowerShell 部署脚本 | 王秀强 | 已完成，支持独立 profile、清理、部署、镜像导入、端口转发 |
 | 新增微服务 | 邓锦尧 | 待开始 |
 | Prometheus + Grafana | 邱俊杰 | 待开始 |
 | ChaosMesh | 段坤良 | 待开始 |

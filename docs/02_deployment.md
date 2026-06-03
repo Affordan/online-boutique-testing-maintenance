@@ -48,4 +48,5 @@ bash scripts/port_forward_frontend.sh
 - 确认 Docker Desktop 已启动。
 - 如果在 Windows 上运行脚本，优先使用 Git Bash；如果使用 WSL2，需要打开 Docker Desktop 的 WSL integration。
 - 如 Pod 长时间停留在 `ContainerCreating` 或出现 `ImagePullBackOff`，优先检查镜像仓库访问和网络代理。
+- 当前仓库提供 `deploy/online-boutique/kubernetes-manifests-cn.yaml`，将 Google Artifact Registry 镜像替换为国内更容易访问的镜像源；`scripts/deploy_online_boutique.sh` 默认使用该文件。
 - 本地集群状态混乱时，可先确认是否需要保留旧实验资源；确认不需要后再执行 `minikube delete` 重建集群。
