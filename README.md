@@ -664,6 +664,20 @@ docs/09_agent_ops.md
 
 每个成员在自己的模块目录内提交文件。
 
+每个人不要直接在 main 上开发。先从最新 main 拉代码，然后新建自己的功能分支，比如：
+
+git checkout main
+git pull origin main
+git checkout -b feature/your-name-deploy-scripts
+
+在自己的分支上改代码，完成后提交：
+
+git add .
+git commit -m "feat: add online boutique deployment scripts"
+git push origin feature/your-name-deploy-scripts
+
+然后去 GitHub 上开 Pull Request，让别人 review。确认没问题后再 merge 到 main。这样 main 始终是稳定版本，也方便追踪每个人贡献。大作业提交要求包括 GitHub 开源源码和成员贡献展示，所以这种提交记录会更清楚，后面写报告和互评也更好交代。
+
 提交信息建议格式：
 
 ```text
