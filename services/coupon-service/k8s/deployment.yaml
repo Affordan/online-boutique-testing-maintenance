@@ -1,28 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-log-service
+  name: coupon-service
   namespace: online-boutique
   labels:
-    app: user-log-service
+    app: coupon-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-log-service
+      app: coupon-service
   template:
     metadata:
       labels:
-        app: user-log-service
+        app: coupon-service
         monitoring: enabled
     spec:
       containers:
-        - name: user-log-service
-          image: user-log-service:latest
+        - name: coupon-service
+          image: coupon-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8080
+          env:
+            - name: CHECKOUT_SERVICE_ADDR
+              value: checkoutservice:5050
           readinessProbe:
             httpGet:
               path: /health

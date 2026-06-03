@@ -1,37 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ops-alert-service
+  name: inventory-service
   namespace: online-boutique
   labels:
-    app: ops-alert-service
+    app: inventory-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ops-alert-service
+      app: inventory-service
   template:
     metadata:
       labels:
-        app: ops-alert-service
+        app: inventory-service
         monitoring: enabled
     spec:
       containers:
-        - name: ops-alert-service
-          image: ops-alert-service:latest
+        - name: inventory-service
+          image: inventory-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8080
           env:
-            - name: PROMETHEUS_URL
-              value: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
-            - name: LATENCY_THRESHOLD
-              value: "1.0"
-            - name: ERROR_RATE_THRESHOLD
-              value: "0.05"
-            - name: CPU_THRESHOLD
-              value: "0.8"
+            - name: PRODUCT_CATALOG_SERVICE_ADDR
+              value: productcatalogservice:3550
+            - name: CHECKOUT_SERVICE_ADDR
+              value: checkoutservice:5050
+            - name: DEFAULT_STOCK
+              value: "100"
           readinessProbe:
             httpGet:
               path: /health
