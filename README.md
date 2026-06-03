@@ -28,33 +28,33 @@ Online-Boutique 是一个典型的在线商店系统，包含前端、商品目�
 
 ## 2. 技术组成
 
-| 类型 | 工具或技术 | 用途 |
-|---|---|---|
-| 微服务系统 | Online-Boutique | 作为被测试和维护的目标系统 |
-| 容器运行 | Docker | 运行容器镜像 |
-| 本地集群 | Minikube | 在本地启动 Kubernetes 集群 |
-| 集群管理 | kubectl | 部署服务、查看 Pod、读取日志 |
-| 包管理 | Helm | 安装监控和故障注入组件 |
-| 监控采集 | Prometheus | 采集 CPU、内存、请求量、错误率、延迟等指标 |
-| 可视化 | Grafana | 展示监控看板 |
-| 故障实验 | ChaosMesh | 注入 Pod Kill、CPU 压力、网络延迟、网络丢包等故障 |
-| 功能测试 | Selenium | 模拟用户浏览商品、加入购物车、结账等操作 |
-| 性能测试 | JMeter | 进行 10/30/50/100 并发测试 |
-| 算法复现 | Python | 进行异常检测、故障诊断和结果分析 |
-| 智能运维 | Python Agent | 查询指标、分析异常、输出诊断摘要 |
+| 类型       | 工具或技术      | 用途                                              |
+| ---------- | --------------- | ------------------------------------------------- |
+| 微服务系统 | Online-Boutique | 作为被测试和维护的目标系统                        |
+| 容器运行   | Docker          | 运行容器镜像                                      |
+| 本地集群   | Minikube        | 在本地启动 Kubernetes 集群                        |
+| 集群管理   | kubectl         | 部署服务、查看 Pod、读取日志                      |
+| 包管理     | Helm            | 安装监控和故障注入组件                            |
+| 监控采集   | Prometheus      | 采集 CPU、内存、请求量、错误率、延迟等指标        |
+| 可视化     | Grafana         | 展示监控看板                                      |
+| 故障实验   | ChaosMesh       | 注入 Pod Kill、CPU 压力、网络延迟、网络丢包等故障 |
+| 功能测试   | Selenium        | 模拟用户浏览商品、加入购物车、结账等操作          |
+| 性能测试   | JMeter          | 进行 10/30/50/100 并发测试                        |
+| 算法复现   | Python          | 进行异常检测、故障诊断和结果分析                  |
+| 智能运维   | Python Agent    | 查询指标、分析异常、输出诊断摘要                  |
 
 ---
 
 ## 3. 成员分工
 
-| 成员 | 负责模块 | 主要工作 | 产出物 |
-|---|---|---|---|
-| 王秀强 | 队长 / Online-Boutique 部署 / 总集成 / 智能运维设计 | 维护 GitHub 仓库结构；确定 Online-Boutique 主方案；部署主系统；统一命名、截图和结果文件；设计智能运维 Agent 的功能边界；整合 PDF 和 PPT | README、部署文档、命令记录、Pod 截图、Service 截图、前端页面截图、总架构图、任务看板、报告主线、PPT 统稿、Agent 设计说明 |
-| 邓锦尧 | 新增微服务开发 | 开发 1–2 个新增服务，推荐实现 `ops-alert-service` 异常告警服务和 `user-log-service` 用户行为日志服务；编写 Dockerfile 和 K8s YAML；保证接口可访问 | FastAPI/Flask 源码、Dockerfile、Deployment YAML、Service YAML、接口测试截图 |
-| 邱俊杰 | Prometheus + Grafana + 监控看板 | 部署监控组件；接入 Online-Boutique 和新增微服务；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板 | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表 |
-| 段坤良 | ChaosMesh + 故障实验 | 部署 ChaosMesh；设计并执行 Pod Kill、CPU 压力、网络延迟、网络丢包等实验；记录故障时间、目标服务、系统现象和恢复情况 | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图 |
-| 韦厚林 | Selenium + JMeter 测试 | 使用 Selenium 模拟用户浏览商品、加入购物车、结账；使用 JMeter 进行 10/30/50/100 并发测试；记录响应时间、吞吐量和错误率 | Selenium 脚本、JMeter JMX、测试结果表、性能测试截图 |
-| 任泓旭 | 异常数据集 + 论文算法复现 | 从 Prometheus 导出正常和故障数据；合并数据集；选择 KPI 异常检测或故障诊断论文；使用 Isolation Forest / PCA / One-Class SVM 做最小复现；输出异常检测图 | normal/fault CSV、merged_dataset.csv、算法代码、异常检测结果图、论文复现说明 |
+| 成员   | 负责模块                                            | 主要工作                                                                                                                                              | 产出物                                                                                                                   |
+| ------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 王秀强 | 队长 / Online-Boutique 部署 / 总集成 / 智能运维设计 | 维护 GitHub 仓库结构；确定 Online-Boutique 主方案；部署主系统；统一命名、截图和结果文件；设计智能运维 Agent 的功能边界；整合 PDF 和 PPT               | README、部署文档、命令记录、Pod 截图、Service 截图、前端页面截图、总架构图、任务看板、报告主线、PPT 统稿、Agent 设计说明 |
+| 邓锦尧 | 新增微服务开发                                      | 开发 1–2 个新增服务，推荐实现 `ops-alert-service` 异常告警服务和 `user-log-service` 用户行为日志服务；编写 Dockerfile 和 K8s YAML；保证接口可访问     | FastAPI/Flask 源码、Dockerfile、Deployment YAML、Service YAML、接口测试截图                                              |
+| 邱俊杰 | Prometheus + Grafana + 监控看板                     | 部署监控组件；接入 Online-Boutique 和新增微服务；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板                              | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表                                                           |
+| 段坤良 | ChaosMesh + 故障实验                                | 部署 ChaosMesh；设计并执行 Pod Kill、CPU 压力、网络延迟、网络丢包等实验；记录故障时间、目标服务、系统现象和恢复情况                                   | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图                                                                        |
+| 韦厚林 | Selenium + JMeter 测试                              | 使用 Selenium 模拟用户浏览商品、加入购物车、结账；使用 JMeter 进行 10/30/50/100 并发测试；记录响应时间、吞吐量和错误率                                | Selenium 脚本、JMeter JMX、测试结果表、性能测试截图                                                                      |
+| 任泓旭 | 异常数据集 + 论文算法复现                           | 从 Prometheus 导出正常和故障数据；合并数据集；选择 KPI 异常检测或故障诊断论文；使用 Isolation Forest / PCA / One-Class SVM 做最小复现；输出异常检测图 | normal/fault CSV、merged_dataset.csv、算法代码、异常检测结果图、论文复现说明                                             |
 
 ---
 
@@ -131,22 +131,22 @@ online-boutique-testing-maintenance/
 
 目录用途说明：
 
-| 目录 | 内容 |
-|---|---|
-| `docs/` | 环境说明、部署记录、分工说明、常见错误、实验记录 |
-| `scripts/` | 一键检查、启动、部署、访问、清理脚本 |
-| `deploy/` | Online-Boutique 和后续 Kubernetes 部署文件 |
-| `services/` | 小组新增微服务源码和部署文件 |
-| `monitoring/` | Prometheus、Grafana 配置和看板文件 |
-| `chaos/` | ChaosMesh 故障实验配置 |
-| `tests/` | Selenium 功能测试脚本和 JMeter 性能测试文件 |
-| `data/` | Prometheus 导出的原始数据、处理后数据和标签文件 |
-| `algorithms/` | 异常检测和故障诊断算法代码 |
-| `agent/` | 智能运维 Agent 代码 |
-| `figures/` | 报告和 PPT 使用的截图 |
-| `results/` | 实验结果表、算法输出、测试结果 |
-| `report/` | 大作业 PDF 报告材料 |
-| `ppt/` | 展示 PPT 材料 |
+| 目录          | 内容                                             |
+| ------------- | ------------------------------------------------ |
+| `docs/`       | 环境说明、部署记录、分工说明、常见错误、实验记录 |
+| `scripts/`    | 一键检查、启动、部署、访问、清理脚本             |
+| `deploy/`     | Online-Boutique 和后续 Kubernetes 部署文件       |
+| `services/`   | 小组新增微服务源码和部署文件                     |
+| `monitoring/` | Prometheus、Grafana 配置和看板文件               |
+| `chaos/`      | ChaosMesh 故障实验配置                           |
+| `tests/`      | Selenium 功能测试脚本和 JMeter 性能测试文件      |
+| `data/`       | Prometheus 导出的原始数据、处理后数据和标签文件  |
+| `algorithms/` | 异常检测和故障诊断算法代码                       |
+| `agent/`      | 智能运维 Agent 代码                              |
+| `figures/`    | 报告和 PPT 使用的截图                            |
+| `results/`    | 实验结果表、算法输出、测试结果                   |
+| `report/`     | 大作业 PDF 报告材料                              |
+| `ppt/`        | 展示 PPT 材料                                    |
 
 ---
 
@@ -154,18 +154,18 @@ online-boutique-testing-maintenance/
 
 推荐环境：
 
-| 项目 | 推荐配置 |
-|---|---|
-| 操作系统 | Windows 10/11 |
-| 终端 | Windows PowerShell |
-| CPU | 4 核及以上 |
-| 内存 | 8GB 及以上 |
-| 磁盘 | 至少 20GB 可用空间 |
-| Docker | Docker Desktop |
-| Kubernetes | Minikube |
-| 命令工具 | kubectl、Helm、Git |
-| 测试工具 | Chrome、Selenium、JMeter |
-| 编程环境 | Python 3.10+ |
+| 项目       | 推荐配置                 |
+| ---------- | ------------------------ |
+| 操作系统   | Windows 10/11            |
+| 终端       | Windows PowerShell       |
+| CPU        | 4 核及以上               |
+| 内存       | 8GB 及以上               |
+| 磁盘       | 至少 20GB 可用空间       |
+| Docker     | Docker Desktop           |
+| Kubernetes | Minikube                 |
+| 命令工具   | kubectl、Helm、Git       |
+| 测试工具   | Chrome、Selenium、JMeter |
+| 编程环境   | Python 3.10+             |
 
 本仓库默认使用 PowerShell 脚本，所有部署命令均在 Windows PowerShell 中执行，不再使用 `bash scripts/*.sh`。如果在 PowerShell 中调用 bash，命令会进入 WSL 环境，可能导致 Windows 中已经安装的 Minikube、Helm 无法被识别。
 
@@ -257,6 +257,36 @@ http://localhost:8080
 
 当页面能够正常打开，并且商品浏览、加入购物车、结账页面能够访问时，说明主系统部署完成。
 
+部署监控组件：
+
+```bash
+bash scripts/deploy_monitoring.sh
+```
+
+访问 Prometheus：
+
+```bash
+bash scripts/port_forward_prometheus.sh
+```
+
+浏览器访问：
+
+```text
+http://localhost:9090
+```
+
+访问 Grafana：
+
+```bash
+bash scripts/port_forward_grafana.sh
+```
+
+浏览器访问：
+
+```text
+http://localhost:3000
+```
+
 ---
 
 ## 7. PowerShell 脚本说明
@@ -264,7 +294,8 @@ http://localhost:8080
 本项目脚本均放在 `scripts/` 目录下。
 
 | 脚本 | 作用 |
-|---|---|
+| ---- | ---- |
+
 | `check_env.ps1` | 检查 Docker、kubectl、Minikube、Helm、Git、Python 是否可用 |
 | `download_online_boutique_manifest.ps1` | 下载 Online-Boutique 的 Kubernetes 部署文件 |
 | `start_minikube.ps1` | 启动 `online-boutique-lab` 独立 Minikube 环境 |
@@ -299,15 +330,15 @@ kubectl get svc -n online-boutique
 
 完成部署后，需要保留以下截图：
 
-| 截图内容 | 建议保存位置 |
-|---|---|
-| Docker、kubectl、Minikube、Helm 版本 | `figures/deployment/01_env_versions.png` |
-| Minikube 启动成功 | `figures/deployment/02_minikube_start.png` |
-| Kubernetes 节点状态 | `figures/deployment/03_nodes.png` |
-| Online-Boutique Pod 状态 | `figures/deployment/04_pods_running.png` |
-| Online-Boutique Service 状态 | `figures/deployment/05_services.png` |
-| Online-Boutique 首页 | `figures/deployment/06_homepage.png` |
-| 商品详情或购物车页面 | `figures/deployment/07_cart_page.png` |
+| 截图内容                             | 建议保存位置                               |
+| ------------------------------------ | ------------------------------------------ |
+| Docker、kubectl、Minikube、Helm 版本 | `figures/deployment/01_env_versions.png`   |
+| Minikube 启动成功                    | `figures/deployment/02_minikube_start.png` |
+| Kubernetes 节点状态                  | `figures/deployment/03_nodes.png`          |
+| Online-Boutique Pod 状态             | `figures/deployment/04_pods_running.png`   |
+| Online-Boutique Service 状态         | `figures/deployment/05_services.png`       |
+| Online-Boutique 首页                 | `figures/deployment/06_homepage.png`       |
+| 商品详情或购物车页面                 | `figures/deployment/07_cart_page.png`      |
 
 部署完成的基本标准：
 
@@ -333,7 +364,6 @@ Get "https://us-central1-docker.pkg.dev/v2/": EOF
 
 ---
 
-
 ## 9. 新增微服务设计
 
 本项目计划新增 1–2 个微服务，用于满足第三档要求，并服务于后续智能运维实验。
@@ -344,12 +374,12 @@ Get "https://us-central1-docker.pkg.dev/v2/": EOF
 
 建议接口：
 
-| 接口 | 说明 |
-|---|---|
-| `GET /health` | 检查服务是否正常 |
+| 接口                   | 说明             |
+| ---------------------- | ---------------- |
+| `GET /health`          | 检查服务是否正常 |
 | `GET /metrics-summary` | 返回核心指标摘要 |
-| `GET /alerts` | 返回当前异常告警 |
-| `POST /check` | 触发一次异常检查 |
+| `GET /alerts`          | 返回当前异常告警 |
+| `POST /check`          | 触发一次异常检查 |
 
 返回示例：
 
@@ -359,7 +389,7 @@ Get "https://us-central1-docker.pkg.dev/v2/": EOF
   "status": "anomaly",
   "reason": "request latency exceeds threshold",
   "latency": 1.82,
-  "threshold": 1.00
+  "threshold": 1.0
 }
 ```
 
@@ -369,12 +399,12 @@ Get "https://us-central1-docker.pkg.dev/v2/": EOF
 
 建议接口：
 
-| 接口 | 说明 |
-|---|---|
-| `GET /health` | 检查服务是否正常 |
-| `POST /log` | 写入一条用户行为日志 |
-| `GET /logs` | 查询日志 |
-| `GET /stats` | 返回行为统计结果 |
+| 接口          | 说明                 |
+| ------------- | -------------------- |
+| `GET /health` | 检查服务是否正常     |
+| `POST /log`   | 写入一条用户行为日志 |
+| `GET /logs`   | 查询日志             |
+| `GET /stats`  | 返回行为统计结果     |
 
 日志示例：
 
@@ -420,15 +450,15 @@ Get "https://us-central1-docker.pkg.dev/v2/": EOF
 
 重点观察指标：
 
-| 指标 | 说明 |
-|---|---|
+| 指标       | 说明                     |
+| ---------- | ------------------------ |
 | CPU 使用率 | 判断服务是否存在计算压力 |
 | 内存使用率 | 判断服务是否存在内存压力 |
-| Pod 状态 | 判断服务是否正常运行 |
-| 请求量 | 观察访问压力变化 |
-| 错误率 | 判断请求失败情况 |
-| 请求延迟 | 判断服务响应是否变慢 |
-| 网络流量 | 观察服务间通信变化 |
+| Pod 状态   | 判断服务是否正常运行     |
+| 请求量     | 观察访问压力变化         |
+| 错误率     | 判断请求失败情况         |
+| 请求延迟   | 判断服务响应是否变慢     |
+| 网络流量   | 观察服务间通信变化       |
 
 输出材料：
 
@@ -447,13 +477,13 @@ docs/05_monitoring.md
 
 计划实验：
 
-| 故障类型 | 目标服务 | 观察内容 |
-|---|---|---|
-| Pod Kill | frontend / cartservice / recommendationservice | 服务重启、请求失败、恢复时间 |
-| CPU 压力 | productcatalogservice / recommendationservice | CPU 指标升高、响应时间变化 |
-| 网络延迟 | frontend 到其他服务 | 页面变慢、请求延迟升高 |
-| 网络丢包 | cartservice / checkoutservice | 错误率升高、结账失败 |
-| 服务不可用 | paymentservice / emailservice | 订单链路异常、日志变化 |
+| 故障类型   | 目标服务                                       | 观察内容                     |
+| ---------- | ---------------------------------------------- | ---------------------------- |
+| Pod Kill   | frontend / cartservice / recommendationservice | 服务重启、请求失败、恢复时间 |
+| CPU 压力   | productcatalogservice / recommendationservice  | CPU 指标升高、响应时间变化   |
+| 网络延迟   | frontend 到其他服务                            | 页面变慢、请求延迟升高       |
+| 网络丢包   | cartservice / checkoutservice                  | 错误率升高、结账失败         |
+| 服务不可用 | paymentservice / emailservice                  | 订单链路异常、日志变化       |
 
 每次实验需要记录：
 
@@ -487,13 +517,13 @@ docs/06_chaos_experiments.md
 
 测试内容：
 
-| 场景 | 操作 |
-|---|---|
-| 首页访问 | 打开 Online-Boutique 首页 |
-| 商品浏览 | 进入商品详情页 |
-| 加入购物车 | 将商品加入购物车 |
-| 查看购物车 | 打开购物车页面 |
-| 结账操作 | 填写信息并提交订单 |
+| 场景         | 操作                       |
+| ------------ | -------------------------- |
+| 首页访问     | 打开 Online-Boutique 首页  |
+| 商品浏览     | 进入商品详情页             |
+| 加入购物车   | 将商品加入购物车           |
+| 查看购物车   | 打开购物车页面             |
+| 结账操作     | 填写信息并提交订单         |
 | 异常状态测试 | 在故障注入期间观察页面表现 |
 
 输出材料：
@@ -517,13 +547,13 @@ results/testing/
 
 记录指标：
 
-| 指标 | 说明 |
-|---|---|
-| Average | 平均响应时间 |
-| Min / Max | 最小和最大响应时间 |
-| Throughput | 吞吐量 |
-| Error % | 错误率 |
-| 90% Line | 90% 请求响应时间 |
+| 指标       | 说明               |
+| ---------- | ------------------ |
+| Average    | 平均响应时间       |
+| Min / Max  | 最小和最大响应时间 |
+| Throughput | 吞吐量             |
+| Error %    | 错误率             |
+| 90% Line   | 90% 请求响应时间   |
 
 输出材料：
 
@@ -561,25 +591,25 @@ data/labels/fault_labels.csv
 
 推荐特征：
 
-| 特征 | 说明 |
-|---|---|
-| timestamp | 时间 |
-| service | 服务名称 |
-| cpu_usage | CPU 使用率 |
-| memory_usage | 内存使用率 |
-| request_count | 请求量 |
-| error_count | 错误请求数 |
-| latency | 请求延迟 |
-| throughput | 吞吐量 |
-| label | normal / anomaly |
+| 特征          | 说明             |
+| ------------- | ---------------- |
+| timestamp     | 时间             |
+| service       | 服务名称         |
+| cpu_usage     | CPU 使用率       |
+| memory_usage  | 内存使用率       |
+| request_count | 请求量           |
+| error_count   | 错误请求数       |
+| latency       | 请求延迟         |
+| throughput    | 吞吐量           |
+| label         | normal / anomaly |
 
 可选算法：
 
-| 算法 | 说明 |
-|---|---|
-| Isolation Forest | 适合做基础异常检测 |
-| PCA | 适合观察多指标偏离 |
-| One-Class SVM | 适合单类异常检测 |
+| 算法             | 说明                           |
+| ---------------- | ------------------------------ |
+| Isolation Forest | 适合做基础异常检测             |
+| PCA              | 适合观察多指标偏离             |
+| One-Class SVM    | 适合单类异常检测               |
 | LSTM AutoEncoder | 适合时间序列异常检测，难度更高 |
 
 输出材料：
@@ -602,13 +632,13 @@ Agent 的目标不是替代完整运维平台，而是在已有实验基础上�
 
 计划能力：
 
-| 能力 | 数据来源 | 输出 |
-|---|---|---|
-| 查询系统状态 | Kubernetes / Prometheus | 当前服务是否正常 |
-| 查看异常指标 | Prometheus | CPU、内存、延迟、错误率异常情况 |
-| 对照故障时间 | ChaosMesh 实验记录 | 异常是否与故障注入一致 |
-| 调用检测算法 | algorithms/ | 异常时间点和异常分数 |
-| 生成诊断摘要 | 监控、故障、算法结果 | 可能异常服务、证据、处理建议 |
+| 能力         | 数据来源                | 输出                            |
+| ------------ | ----------------------- | ------------------------------- |
+| 查询系统状态 | Kubernetes / Prometheus | 当前服务是否正常                |
+| 查看异常指标 | Prometheus              | CPU、内存、延迟、错误率异常情况 |
+| 对照故障时间 | ChaosMesh 实验记录      | 异常是否与故障注入一致          |
+| 调用检测算法 | algorithms/             | 异常时间点和异常分数            |
+| 生成诊断摘要 | 监控、故障、算法结果    | 可能异常服务、证据、处理建议    |
 
 示例输出：
 
@@ -668,20 +698,20 @@ algo: add isolation forest baseline
 
 ## 16. 当前完成状态
 
-| 模块 | 负责人 | 状态 |
-|---|---|---|
-| 项目选型 | 王秀强 | 已确定 Online-Boutique |
-| GitHub 仓库 | 王秀强 | 已建立，目录结构已完成 |
-| Online-Boutique 部署 | 王秀强 | 已完成，本地页面可访问 |
-| PowerShell 部署脚本 | 王秀强 | 已完成，支持独立 profile、清理、部署、镜像导入、端口转发 |
-| 新增微服务 | 邓锦尧 | 待开始 |
-| Prometheus + Grafana | 邱俊杰 | 待开始 |
-| ChaosMesh | 段坤良 | 待开始 |
-| Selenium + JMeter | 韦厚林 | 待开始 |
-| 异常数据集 + 论文算法 | 任泓旭 | 待开始 |
-| 智能运维 Agent | 王秀强 | 待设计 |
-| 报告 PDF | 全组 | 后期整合 |
-| 展示 PPT | 全组 | 后期整合 |
+| 模块                  | 负责人 | 状态                                                     |
+| --------------------- | ------ | -------------------------------------------------------- |
+| 项目选型              | 王秀强 | 已确定 Online-Boutique                                   |
+| GitHub 仓库           | 王秀强 | 已建立，目录结构已完成                                   |
+| Online-Boutique 部署  | 王秀强 | 已完成，本地页面可访问                                   |
+| PowerShell 部署脚本   | 王秀强 | 已完成，支持独立 profile、清理、部署、镜像导入、端口转发 |
+| 新增微服务            | 邓锦尧 | 待开始                                                   |
+| Prometheus + Grafana  | 邱俊杰 | 进行中                                                   |
+| ChaosMesh             | 段坤良 | 待开始                                                   |
+| Selenium + JMeter     | 韦厚林 | 待开始                                                   |
+| 异常数据集 + 论文算法 | 任泓旭 | 待开始                                                   |
+| 智能运维 Agent        | 王秀强 | 待设计                                                   |
+| 报告 PDF              | 全组   | 后期整合                                                 |
+| 展示 PPT              | 全组   | 后期整合                                                 |
 
 ---
 
