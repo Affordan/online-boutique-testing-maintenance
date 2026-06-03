@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-loss-frontend
+  namespace: online-boutique
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+      - online-boutique
+    labelSelectors:
+      app: frontend
+  loss:
+    loss: '50'
+    correlation: '100'
+  duration: '60s'
