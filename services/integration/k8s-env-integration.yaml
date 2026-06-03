@@ -1,0 +1,47 @@
+# 为 Online-Boutique 既有服务注入新微服务地址（与集群内 DNS 一致）
+# 应用方式：kubectl apply -f services/integration/k8s-env-integration.yaml -n online-boutique
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: online-boutique
+spec:
+  template:
+    spec:
+      containers:
+        - name: server
+          env:
+            - name: COUPON_SERVICE_ADDR
+              value: http://coupon-service:8080
+            - name: INVENTORY_SERVICE_ADDR
+              value: http://inventory-service:8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  namespace: online-boutique
+spec:
+  template:
+    spec:
+      containers:
+        - name: server
+          env:
+            - name: COUPON_SERVICE_ADDR
+              value: http://coupon-service:8080
+            - name: INVENTORY_SERVICE_ADDR
+              value: http://inventory-service:8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalogservice
+  namespace: online-boutique
+spec:
+  template:
+    spec:
+      containers:
+        - name: server
+          env:
+            - name: INVENTORY_SERVICE_ADDR
+              value: http://inventory-service:8080
