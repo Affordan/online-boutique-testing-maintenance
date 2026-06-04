@@ -17,15 +17,20 @@ helm upgrade --install "${RELEASE_NAME}" "${CHART_NAME}" \
   --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
   --set prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues=false
 
-kubectl create configmap online-boutique-overview-dashboard \
-  --from-file=online-boutique-overview.json=monitoring/grafana/dashboards/online-boutique-overview.json \
-  --namespace "${MONITORING_NAMESPACE}" \
-  --dry-run=client -o yaml | kubectl apply -f -
+for dashboard in monitoring/grafana/dashboards/*.json; do
+  dashboard_name="$(basename "${dashboard}" .json)"
+  configmap_name="${dashboard_name}-dashboard"
 
-kubectl label configmap online-boutique-overview-dashboard \
-  grafana_dashboard=1 \
-  --namespace "${MONITORING_NAMESPACE}" \
-  --overwrite
+  kubectl create configmap "${configmap_name}" \
+    --from-file="$(basename "${dashboard}")=${dashboard}" \
+    --namespace "${MONITORING_NAMESPACE}" \
+    --dry-run=client -o yaml | kubectl apply -f -
+
+  kubectl label configmap "${configmap_name}" \
+    grafana_dashboard=1 \
+    --namespace "${MONITORING_NAMESPACE}" \
+    --overwrite
+done
 
 kubectl apply -f monitoring/prometheus/servicemonitor-custom-services.yaml
 

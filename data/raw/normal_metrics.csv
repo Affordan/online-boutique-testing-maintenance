@@ -1,0 +1,1 @@
+timestamp,experiment_id,service,pod,scenario,cpu_usage,memory_usage_mb,restart_count,request_rate,error_rate,avg_latency_ms,p95_latency_ms,throughput,http_2xx_rate,http_4xx_rate,http_5xx_rate,network_receive_bytes,network_transmit_bytes

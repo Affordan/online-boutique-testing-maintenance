@@ -1,19 +1,13 @@
 # Online-Boutique Monitoring PromQL
 
-本文记录 Grafana 看板和 Prometheus 手动验证使用的核心查询语句。
+本文记录 C 监控任务使用的 PromQL，覆盖 Online-Boutique 原系统、`coupon-service` 和 `inventory-service`。
 
-## 基础资源指标
+## 资源与 Pod 状态
 
 ### Pod 运行状态
 
 ```promql
 sum by (phase) (kube_pod_status_phase{namespace="online-boutique"})
-```
-
-### Running Pod 数量
-
-```promql
-sum(kube_pod_status_phase{namespace="online-boutique", phase="Running"})
 ```
 
 ### Pod 重启次数
@@ -25,13 +19,13 @@ sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace="onlin
 ### Pod CPU 使用率
 
 ```promql
-sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="online-boutique", container!="", image!=""}[5m]))
+sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="online-boutique"}[5m]))
 ```
 
 ### Pod 内存使用量
 
 ```promql
-sum by (pod) (container_memory_working_set_bytes{namespace="online-boutique", container!="", image!=""})
+sum by (pod) (container_memory_working_set_bytes{namespace="online-boutique"})
 ```
 
 ### Pod 网络接收流量
@@ -46,37 +40,77 @@ sum by (pod) (rate(container_network_receive_bytes_total{namespace="online-bouti
 sum by (pod) (rate(container_network_transmit_bytes_total{namespace="online-boutique"}[5m]))
 ```
 
-## 新增微服务应用指标
+## coupon-service / inventory-service 应用指标
 
-以下查询依赖新增微服务暴露 Prometheus 格式的 `/metrics`，并在 Service 上添加 `monitoring: enabled` label。
-
-### 请求量
+### Prometheus 抓取状态
 
 ```promql
-sum by (service) (rate(http_requests_total{namespace="online-boutique"}[5m]))
+up{namespace="online-boutique", service=~"coupon-service|inventory-service"}
+```
+
+### 请求速率
+
+```promql
+sum by (service) (
+  rate({__name__=~"coupon_service_requests_total|inventory_service_requests_total", namespace="online-boutique"}[5m])
+)
+```
+
+### 2xx 响应速率
+
+```promql
+sum by (service) (
+  rate({__name__=~"coupon_service_requests_total|inventory_service_requests_total", namespace="online-boutique", status=~"2.."}[5m])
+)
+```
+
+### 4xx 响应速率
+
+```promql
+sum by (service) (
+  rate({__name__=~"coupon_service_requests_total|inventory_service_requests_total", namespace="online-boutique", status=~"4.."}[5m])
+)
+```
+
+### 5xx 响应速率
+
+```promql
+sum by (service) (
+  rate({__name__=~"coupon_service_requests_total|inventory_service_requests_total", namespace="online-boutique", status=~"5.."}[5m])
+)
 ```
 
 ### 错误率
 
 ```promql
-sum by (service) (rate(http_requests_total{namespace="online-boutique", status=~"5.."}[5m]))
+sum by (service) (
+  rate({__name__=~"coupon_service_requests_total|inventory_service_requests_total", namespace="online-boutique", status=~"4..|5.."}[5m])
+)
 /
-sum by (service) (rate(http_requests_total{namespace="online-boutique"}[5m]))
+sum by (service) (
+  rate({__name__=~"coupon_service_requests_total|inventory_service_requests_total", namespace="online-boutique"}[5m])
+)
 ```
 
-### P95 请求延迟
+### 平均延迟
+
+```promql
+sum by (service) (
+  rate({__name__=~"coupon_service_request_duration_seconds_sum|inventory_service_request_duration_seconds_sum", namespace="online-boutique"}[5m])
+)
+/
+sum by (service) (
+  rate({__name__=~"coupon_service_request_duration_seconds_count|inventory_service_request_duration_seconds_count", namespace="online-boutique"}[5m])
+)
+```
+
+### P95 延迟
 
 ```promql
 histogram_quantile(
   0.95,
   sum by (le, service) (
-    rate(http_request_duration_seconds_bucket{namespace="online-boutique"}[5m])
+    rate({__name__=~"coupon_service_request_duration_seconds_bucket|inventory_service_request_duration_seconds_bucket", namespace="online-boutique"}[5m])
   )
 )
-```
-
-### 服务健康状态
-
-```promql
-up{namespace="online-boutique", job=~".*ops-alert-service.*|.*user-log-service.*"}
 ```

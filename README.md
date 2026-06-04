@@ -52,8 +52,8 @@ Online-Boutique 是一个典型的在线商店系统，包含前端、商品目�
 | 成员 | 负责模块 | 主要工作 | 产出物 |
 |---|---|---|---|
 | 王秀强 | 队长 / Online-Boutique 部署 / 总集成 / 智能运维设计 | 维护 GitHub 仓库结构；确定 Online-Boutique 主方案；部署主系统；统一命名、截图和结果文件；设计智能运维 Agent 的功能边界；整合 PDF 和 PPT | README、部署文档、命令记录、Pod 截图、Service 截图、前端页面截图、总架构图、任务看板、报告主线、PPT 统稿、Agent 设计说明 |
-| 邓锦尧 | 新增微服务开发 | 开发 1–2 个新增服务，推荐实现 `ops-alert-service` 异常告警服务和 `user-log-service` 用户行为日志服务；编写 Dockerfile 和 K8s YAML；保证接口可访问 | FastAPI/Flask 源码、Dockerfile、Deployment YAML、Service YAML、接口测试截图 |
-| 邱俊杰 | Prometheus + Grafana + 监控看板 | 部署监控组件；接入 Online-Boutique 和新增微服务；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板 | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表 |
+| 邓锦尧 | 新增微服务开发 | 开发 `coupon-service` 优惠券服务和 `inventory-service` 库存服务；编写 Dockerfile 和 K8s YAML；暴露 `/metrics` 供 Prometheus 采集 | FastAPI 源码、Dockerfile、Deployment YAML、Service YAML、接口测试截图 |
+| 邱俊杰 | Prometheus + Grafana + 监控看板 | 部署监控组件；接入 Online-Boutique、`coupon-service` 和 `inventory-service`；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板并导出 CSV | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表、normal/fault CSV |
 | 段坤良 | ChaosMesh + 故障实验 | 部署 ChaosMesh；设计并执行 Pod Kill、CPU 压力、网络延迟、网络丢包等实验；记录故障时间、目标服务、系统现象和恢复情况 | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图 |
 | 韦厚林 | Selenium + JMeter 测试 | 使用 Selenium 模拟用户浏览商品、加入购物车、结账；使用 JMeter 进行 10/30/50/100 并发测试；记录响应时间、吞吐量和错误率 | Selenium 脚本、JMeter JMX、测试结果表、性能测试截图 |
 | 任泓旭 | 异常数据集 + 论文算法复现 | 从 Prometheus 导出正常和故障数据；合并数据集；选择 KPI 异常检测或故障诊断论文；使用 Isolation Forest / PCA / One-Class SVM 做最小复现；输出异常检测图 | normal/fault CSV、merged_dataset.csv、算法代码、异常检测结果图、论文复现说明 |
@@ -88,8 +88,8 @@ online-boutique-testing-maintenance/
 │       └── kubernetes-manifests.yaml
 │
 ├── services/
-│   ├── ops-alert-service/
-│   └── user-log-service/
+│   ├── coupon-service/
+│   └── inventory-service/
 │
 ├── monitoring/
 │   ├── prometheus/
@@ -229,6 +229,12 @@ http://localhost:8080
 
 当页面能够正常打开，并且商品浏览、加入购物车、结账页面能够访问时，说明主系统部署完成。
 
+部署新增微服务：
+
+```bash
+bash scripts/deploy_custom_services.sh
+```
+
 部署监控组件：
 
 ```bash
@@ -259,6 +265,24 @@ bash scripts/port_forward_grafana.sh
 http://localhost:3000
 ```
 
+导出正常状态监控数据：
+
+```bash
+python3 scripts/export_monitoring_metrics.py \
+  --experiment-id EXP_001 \
+  --scenario normal_traffic \
+  --output data/raw/normal_metrics.csv
+```
+
+导出故障状态监控数据：
+
+```bash
+python3 scripts/export_monitoring_metrics.py \
+  --experiment-id EXP_002 \
+  --scenario fault_traffic \
+  --output data/raw/fault_metrics_raw.csv
+```
+
 ---
 
 ## 7. 部署脚本
@@ -268,10 +292,12 @@ http://localhost:3000
 | `scripts/check_env.sh` | 检查 Docker、kubectl、Minikube、Helm、Git、Python 是否可用 |
 | `scripts/start_minikube.sh` | 使用 Docker driver 启动本地 Minikube 集群 |
 | `scripts/deploy_online_boutique.sh` | 创建 `online-boutique` 命名空间并部署系统 |
+| `scripts/deploy_custom_services.sh` | 构建、加载并部署 `coupon-service` 和 `inventory-service` |
 | `scripts/port_forward_frontend.sh` | 将前端服务转发到本地 `8080` 端口 |
 | `scripts/deploy_monitoring.sh` | 使用 Helm 部署 Prometheus、Grafana 和基础 Kubernetes 监控组件 |
 | `scripts/port_forward_prometheus.sh` | 将 Prometheus 转发到本地 `9090` 端口 |
 | `scripts/port_forward_grafana.sh` | 将 Grafana 转发到本地 `3000` 端口 |
+| `scripts/export_monitoring_metrics.py` | 从 Prometheus 导出正常或故障场景 CSV |
 | `scripts/clean_online_boutique.sh` | 删除 `online-boutique` 命名空间并清理部署 |
 
 若本地集群状态已经混乱，可以执行：
@@ -311,58 +337,40 @@ minikube delete
 
 ## 9. 新增微服务设计
 
-本项目计划新增 1–2 个微服务，用于满足第三档要求，并服务于后续智能运维实验。
+本项目新增 `coupon-service` 和 `inventory-service`，用于满足第三档要求，并为监控、故障注入、性能测试和异常数据采集提供应用级指标。
 
-### 9.1 ops-alert-service
+### 9.1 coupon-service
 
-`ops-alert-service` 用于读取 Prometheus 指标，并根据 CPU、内存、错误率、请求延迟等指标输出异常告警结果。
+`coupon-service` 用于提供优惠券查询、校验和应用能力，并与 `frontend`、`checkoutservice` 形成业务关联。
 
-建议接口：
-
-| 接口 | 说明 |
-|---|---|
-| `GET /health` | 检查服务是否正常 |
-| `GET /metrics-summary` | 返回核心指标摘要 |
-| `GET /alerts` | 返回当前异常告警 |
-| `POST /check` | 触发一次异常检查 |
-
-返回示例：
-
-```json
-{
-  "service": "frontend",
-  "status": "anomaly",
-  "reason": "request latency exceeds threshold",
-  "latency": 1.82,
-  "threshold": 1.00
-}
-```
-
-### 9.2 user-log-service
-
-`user-log-service` 用于记录用户行为和测试行为，包括浏览商品、加入购物车、结账、请求失败、响应时间等。
-
-建议接口：
+主要接口：
 
 | 接口 | 说明 |
 |---|---|
 | `GET /health` | 检查服务是否正常 |
-| `POST /log` | 写入一条用户行为日志 |
-| `GET /logs` | 查询日志 |
-| `GET /stats` | 返回行为统计结果 |
+| `GET /coupons` | 查询可用优惠券 |
+| `POST /coupons/validate` | 校验优惠券是否适用于当前购物车 |
+| `POST /coupons/apply` | 为订单应用优惠券 |
+| `GET /coupons/applied/{order_id}` | 查询订单已应用优惠券 |
+| `GET /metrics` | 暴露 Prometheus 指标 |
 
-日志示例：
+### 9.2 inventory-service
 
-```json
-{
-  "user_id": "test-user-001",
-  "action": "add_to_cart",
-  "service": "frontend",
-  "timestamp": "2026-06-01 10:00:00",
-  "response_time": 0.42,
-  "status": "success"
-}
-```
+`inventory-service` 用于提供库存查询、同步、预留和释放能力，并与 `productcatalogservice`、`checkoutservice` 形成业务关联。
+
+主要接口：
+
+| 接口 | 说明 |
+|---|---|
+| `GET /health` | 检查服务是否正常 |
+| `GET /inventory` | 查询库存列表 |
+| `GET /inventory/{product_id}` | 查询单个商品库存 |
+| `POST /inventory/sync` | 同步商品库存 |
+| `POST /inventory/reserve` | 为订单预留库存 |
+| `POST /inventory/release` | 释放订单库存预留 |
+| `GET /metrics` | 暴露 Prometheus 指标 |
+
+两个新增服务均暴露请求总数和请求耗时指标，供 Prometheus 采集并用于计算请求速率、错误率、平均延迟和 P95 延迟。
 
 新增微服务交付要求：
 
@@ -388,7 +396,7 @@ minikube delete
 1. 部署 Prometheus。
 2. 部署 Grafana。
 3. 接入 Online-Boutique 服务。
-4. 接入新增微服务。
+4. 接入 `coupon-service` 和 `inventory-service`。
 5. 制作 Grafana 看板。
 6. 记录 PromQL 查询语句。
 7. 保存监控截图。
@@ -411,6 +419,8 @@ minikube delete
 monitoring/
 figures/monitoring/
 results/monitoring/
+data/raw/normal_metrics.csv
+data/raw/fault_metrics_raw.csv
 docs/05_monitoring.md
 ```
 
@@ -522,14 +532,14 @@ Prometheus 正常运行数据
 Prometheus 故障注入数据
 JMeter 压测结果
 Selenium 执行记录
-user-log-service 行为日志
+coupon-service / inventory-service 应用指标
 ```
 
 数据文件建议：
 
 ```text
 data/raw/normal_metrics.csv
-data/raw/fault_metrics.csv
+data/raw/fault_metrics_raw.csv
 data/processed/merged_dataset.csv
 data/labels/fault_labels.csv
 ```
@@ -612,7 +622,7 @@ docs/09_agent_ops.md
 提交信息建议格式：
 
 ```text
-feat: add ops-alert-service basic api
+feat: add coupon-service basic api
 docs: update deployment record
 test: add selenium cart test
 exp: add pod-kill chaos experiment
@@ -648,7 +658,7 @@ algo: add isolation forest baseline
 | 项目选型 | 王秀强 | 已确定 Online-Boutique |
 | GitHub 仓库 | 王秀强 | 待完善 |
 | Online-Boutique 部署 | 王秀强 | 进行中 |
-| 新增微服务 | 邓锦尧 | 待开始 |
+| 新增微服务 | 邓锦尧 | 进行中 |
 | Prometheus + Grafana | 邱俊杰 | 进行中 |
 | ChaosMesh | 段坤良 | 待开始 |
 | Selenium + JMeter | 韦厚林 | 待开始 |
