@@ -2,21 +2,17 @@ param(
     [string]$Namespace = "online-boutique"
 )
 
-Write-Host "Current kubectl context:" -ForegroundColor Cyan
+Write-Host "Current context:" -ForegroundColor Cyan
 kubectl config current-context
 
 Write-Host ""
 Write-Host "Nodes:" -ForegroundColor Cyan
-kubectl get nodes
+kubectl get nodes -o wide
 
 Write-Host ""
-Write-Host "Pods:" -ForegroundColor Cyan
+Write-Host "Pods in $Namespace:" -ForegroundColor Cyan
 kubectl get pods -n $Namespace
 
 Write-Host ""
-Write-Host "Services:" -ForegroundColor Cyan
+Write-Host "Services in $Namespace:" -ForegroundColor Cyan
 kubectl get svc -n $Namespace
-
-Write-Host ""
-Write-Host "If frontend is Running, use:" -ForegroundColor Green
-Write-Host ".\scripts\port_forward_frontend.ps1"

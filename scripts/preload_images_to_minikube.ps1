@@ -1,67 +1,41 @@
 param(
     [string]$ProfileName = "online-boutique-lab",
     [string]$Namespace = "online-boutique",
-    [string]$ManifestPath = "deploy/online-boutique/kubernetes-manifests.yaml",
-    [string]$ImageListPath = "deploy/online-boutique/images.txt",
+    [string]$ManifestPath = "deploy\online-boutique\kubernetes-manifests.yaml",
     [switch]$RestartPods
 )
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "Stop"
+$RepoRoot = Split-Path -Parent $PSScriptRoot
+$Manifest = Join-Path $RepoRoot $ManifestPath
+$ImageList = Join-Path (Split-Path -Parent $Manifest) "images.txt"
 
-if (-not (Test-Path $ManifestPath)) {
-    Write-Host "Manifest file not found: $ManifestPath" -ForegroundColor Red
-    exit 1
-}
+if (-not (Test-Path $Manifest)) { throw "Manifest not found: $Manifest" }
 
-New-Item -ItemType Directory -Force -Path (Split-Path $ImageListPath -Parent) | Out-Null
-
-$images = Select-String -Path $ManifestPath -Pattern "image:" |
-    ForEach-Object { $_.Line.Trim() -replace "^image:\s*", "" } |
+Write-Host "Extracting images from manifest..." -ForegroundColor Cyan
+$images = Select-String -Path $Manifest -Pattern "image:" |
+    ForEach-Object { $_.Line.Trim().Replace("image:", "").Trim() } |
     Sort-Object -Unique
+$images | Set-Content $ImageList
 
-$images | Set-Content $ImageListPath -Encoding UTF8
+Write-Host "Images:" -ForegroundColor Cyan
+$images | ForEach-Object { Write-Host "  $_" }
 
-Write-Host "Image list saved to: $ImageListPath" -ForegroundColor Cyan
-Write-Host ""
-
-$failedPull = @()
-foreach ($image in $images) {
-    Write-Host "Pulling $image" -ForegroundColor Cyan
-    docker pull $image
-    if ($LASTEXITCODE -ne 0) {
-        $failedPull += $image
-    }
+foreach ($img in $images) {
+    Write-Host "Pulling $img" -ForegroundColor Cyan
+    docker pull $img
+    if ($LASTEXITCODE -ne 0) { throw "docker pull failed: $img" }
 }
 
-if ($failedPull.Count -gt 0) {
-    Write-Host ""
-    Write-Host "Some images failed to pull from Windows Docker:" -ForegroundColor Red
-    $failedPull | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
-    Write-Host "Check network or Docker Desktop proxy, then run this script again." -ForegroundColor Yellow
-    exit 1
+foreach ($img in $images) {
+    Write-Host "Loading $img into Minikube profile: $ProfileName" -ForegroundColor Green
+    minikube -p $ProfileName image load $img
+    if ($LASTEXITCODE -ne 0) { throw "minikube image load failed: $img" }
 }
-
-$failedLoad = @()
-foreach ($image in $images) {
-    Write-Host "Loading $image into Minikube profile $ProfileName" -ForegroundColor Green
-    minikube image load $image -p $ProfileName
-    if ($LASTEXITCODE -ne 0) {
-        $failedLoad += $image
-    }
-}
-
-if ($failedLoad.Count -gt 0) {
-    Write-Host ""
-    Write-Host "Some images failed to load into Minikube:" -ForegroundColor Red
-    $failedLoad | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
-    exit 1
-}
-
-Write-Host ""
-Write-Host "Images loaded into Minikube." -ForegroundColor Green
 
 if ($RestartPods) {
-    Write-Host "Restarting pods in namespace: $Namespace" -ForegroundColor Cyan
+    Write-Host "Restarting pods in namespace: $Namespace" -ForegroundColor Yellow
     kubectl delete pod --all -n $Namespace
-    Write-Host "Use .\scripts\wait_online_boutique.ps1 to watch pod status."
 }
+
+Write-Host "Image preload finished." -ForegroundColor Green

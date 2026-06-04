@@ -1,6 +1,5 @@
 param(
     [string]$ProfileName = "online-boutique-lab",
-    [string]$Driver = "docker",
     [int]$Cpus = 4,
     [int]$Memory = 6144
 )
@@ -8,20 +7,18 @@ param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "Starting Minikube profile: $ProfileName" -ForegroundColor Cyan
-Write-Host "Driver: $Driver, CPUs: $Cpus, Memory: $Memory MB"
+Write-Host "Driver: docker, CPUs: $Cpus, Memory: $Memory MB" -ForegroundColor Cyan
 
-minikube start -p $ProfileName --driver=$Driver --cpus=$Cpus --memory=$Memory
+minikube start -p $ProfileName --driver=docker --cpus=$Cpus --memory=$Memory
+if ($LASTEXITCODE -ne 0) { throw "minikube start failed" }
 
+minikube update-context -p $ProfileName
 kubectl config use-context $ProfileName
 
 Write-Host ""
-Write-Host "Current kubectl context:" -ForegroundColor Cyan
+Write-Host "Current context:" -ForegroundColor Cyan
 kubectl config current-context
 
 Write-Host ""
-Write-Host "Kubernetes nodes:" -ForegroundColor Cyan
+Write-Host "Nodes:" -ForegroundColor Cyan
 kubectl get nodes
-
-Write-Host ""
-Write-Host "All pods:" -ForegroundColor Cyan
-kubectl get pods -A

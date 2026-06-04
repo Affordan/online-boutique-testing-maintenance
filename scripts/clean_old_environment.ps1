@@ -11,23 +11,20 @@ Write-Host "Minikube profiles before cleanup:" -ForegroundColor Cyan
 minikube profile list
 
 Write-Host ""
-Write-Host "Cleaning Online-Boutique namespace in current context if it exists..." -ForegroundColor Cyan
-kubectl delete namespace $Namespace --ignore-not-found=true --wait=false
+Write-Host "Cleaning Online-Boutique namespace in current context if it exists..." -ForegroundColor Yellow
+kubectl delete namespace $Namespace --ignore-not-found=true
 
 if ($DeleteProjectProfile) {
-    Write-Host ""
     Write-Host "Deleting project profile: $ProjectProfile" -ForegroundColor Yellow
     minikube delete -p $ProjectProfile
 }
 
 if ($StopOldProfile) {
-    Write-Host ""
     Write-Host "Stopping old default profile: $OldProfile" -ForegroundColor Yellow
     minikube stop -p $OldProfile
 }
 
 if ($DeleteOldProfile) {
-    Write-Host ""
     Write-Host "Deleting old default profile: $OldProfile" -ForegroundColor Red
     minikube delete -p $OldProfile
 }
