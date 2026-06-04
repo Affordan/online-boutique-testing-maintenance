@@ -278,10 +278,11 @@ http://localhost:8080
 
 当前状态：
 
-- 两个服务已能在 `online-boutique` namespace 中运行。
+- 两个服务已能在 `online-boutique` namespace 中以独立 Kubernetes `Deployment` 和 `Service` 运行。
 - Service 类型为 `ClusterIP`，集群内地址分别为 `http://coupon-service:8080` 和 `http://inventory-service:8080`。
+- 环境变量注入不是“替代部署新微服务”，而是把原有 `frontend`、`checkoutservice`、`productcatalogservice` 的运行时配置指向新增服务地址，用于完成服务间接入验证。
 - 当前原 Online-Boutique 前端页面尚未改造，不会直接显示优惠券输入框或库存数量。
-- 新增服务通过 REST 接口、Service、环境变量注入进行验证。
+- 新增服务通过 REST 接口、Kubernetes Service、环境变量接入进行验证。
 - 后续如需前端可视化展示，可单独改造 `frontend` 或增加 `custom-demo-ui`。
 
 ### 7.1 部署与接入
@@ -313,6 +314,21 @@ http://localhost:8080
 | `frontend`              | `COUPON_SERVICE_ADDR=http://coupon-service:8080`、`INVENTORY_SERVICE_ADDR=http://inventory-service:8080` |
 | `checkoutservice`       | `COUPON_SERVICE_ADDR=http://coupon-service:8080`、`INVENTORY_SERVICE_ADDR=http://inventory-service:8080` |
 | `productcatalogservice` | `INVENTORY_SERVICE_ADDR=http://inventory-service:8080`                                                   |
+
+说明：这里的 `kubectl set env` 只是在既有 Deployment 的 Pod 模板中增加环境变量，从而触发这些原有服务滚动更新。它不会创建 `coupon-service` 或 `inventory-service`；真正创建新增微服务的是 `services/coupon-service/k8s/` 和 `services/inventory-service/k8s/` 下的 Deployment / Service 清单。
+
+### 7.3 “部署微服务”和“环境变量接入”的区别
+
+| 项目 | 实际部署新增微服务 | 环境变量接入原有服务 |
+| ---- | ------------------ | -------------------- |
+| 作用 | 创建新的 Pod、Deployment、Service，使新服务在集群内独立运行 | 修改原有服务配置，让它们知道新服务的地址 |
+| 本项目对应操作 | `kubectl apply -f services/coupon-service/k8s`、`kubectl apply -f services/inventory-service/k8s` | `kubectl set env deployment/frontend ...` 等命令 |
+| 结果 | 集群中能看到 `coupon-service`、`inventory-service` 的 Pod 和 Service | 原有服务的 Pod 模板中出现 `COUPON_SERVICE_ADDR`、`INVENTORY_SERVICE_ADDR` |
+| 是否等同 | 是新增微服务本体 | 不是新增微服务本体，只是服务发现 / 集成配置 |
+
+如果 PR 目标只是证明“新增两个微服务并接入 Online-Boutique”，当前做法是可以说明的：先部署新增服务，再通过环境变量把原系统接入新增服务。
+
+如果 PR 目标要求更接近生产环境或完全声明式交付，建议不要只依赖脚本里的 `kubectl set env`，而是把这些环境变量写入可版本管理的 Kubernetes manifest、Kustomize patch 或 Helm values 中；同时根据业务需求改造 `frontend`、`checkoutservice`、`productcatalogservice` 代码，使它们真正调用优惠券和库存接口，而不仅仅是保存新增服务地址。
 
 ---
 
