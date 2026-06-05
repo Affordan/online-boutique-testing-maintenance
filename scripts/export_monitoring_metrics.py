@@ -52,12 +52,12 @@ def value_by_label(base_url: str, expr: str, label: str) -> dict[str, float]:
 
 
 def pod_service_map(base_url: str) -> dict[str, str]:
-    expr = 'kube_pod_labels{namespace="online-boutique", label_app!=""}'
+    expr = 'up{namespace="online-boutique", service=~"coupon-service|inventory-service"}'
     mapping: dict[str, str] = {}
     for item in prom_query(base_url, expr):
         metric = item.get("metric", {})
         pod = metric.get("pod")
-        service = metric.get("label_app")
+        service = metric.get("service")
         if pod and service:
             mapping[pod] = service
     return mapping
