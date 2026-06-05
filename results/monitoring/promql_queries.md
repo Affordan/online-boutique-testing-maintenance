@@ -42,6 +42,8 @@ sum by (pod) (rate(container_network_transmit_bytes_total{namespace="online-bout
 
 ## coupon-service / inventory-service 应用指标
 
+`coupon-service` 与 `inventory-service` 的业务 Counter/Histogram 显式暴露 `service` label；ServiceMonitor 使用 `honorLabels: true` 保留该标签，便于 Dashboard、导出脚本和报告查询稳定按服务聚合。
+
 ### Prometheus 抓取状态
 
 ```promql

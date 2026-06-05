@@ -6,7 +6,7 @@
 |---|---|---|---|
 | `timestamp` | datetime | 导出脚本采样时间 | CSV 采样时间，本地时区格式 |
 | `experiment_id` | string | 导出参数 | 实验编号，例如 `EXP_001` |
-| `service` | string | `kube_pod_labels.label_app` | 服务名 |
+| `service` | string | 应用指标 `service` label / `kube_pod_labels.label_app` | 服务名；请求、错误和延迟类指标由 `coupon-service` / `inventory-service` 显式暴露 `service` label |
 | `pod` | string | Kubernetes pod label | Pod 名称 |
 | `scenario` | string | 导出参数 | 场景，例如 `normal_traffic`、`fault_traffic` |
 | `cpu_usage` | core/s | `rate(container_cpu_usage_seconds_total[5m])` | 5 分钟窗口 CPU 使用速率 |
@@ -23,4 +23,4 @@
 | `network_receive_bytes` | bytes/s | `rate(container_network_receive_bytes_total[5m])` | Pod 网络接收速率 |
 | `network_transmit_bytes` | bytes/s | `rate(container_network_transmit_bytes_total[5m])` | Pod 网络发送速率 |
 
-注意：Online-Boutique 原系统默认主要提供 Kubernetes/容器层指标。请求速率、错误率和延迟字段主要来自 `coupon-service` 与 `inventory-service` 的 `/metrics`。
+注意：Online-Boutique 原系统默认主要提供 Kubernetes/容器层指标。请求速率、错误率和延迟字段主要来自 `coupon-service` 与 `inventory-service` 的 `/metrics`。ServiceMonitor 设置了 `honorLabels: true`，以保留业务指标自身暴露的 `service` label。

@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 app = FastAPI(title="coupon-service", version="1.0.0", description="Coupon / promotion service for frontend and checkout")
 
 CHECKOUT_SERVICE_ADDR = os.getenv("CHECKOUT_SERVICE_ADDR", "checkoutservice:5050")
+SERVICE_NAME = "coupon-service"
 
 PROMOTIONS: dict[str, dict[str, Any]] = {
     "SAVE10": {"code": "SAVE10", "type": "percent", "value": 10, "min_amount": 20.0, "description": "10% off orders over $20"},
@@ -20,8 +21,8 @@ PROMOTIONS: dict[str, dict[str, Any]] = {
 
 applied_coupons: dict[str, dict[str, Any]] = {}
 
-REQUEST_COUNT = Counter("coupon_service_requests_total", "HTTP requests", ["method", "endpoint", "status"])
-REQUEST_LATENCY = Histogram("coupon_service_request_duration_seconds", "HTTP latency", ["method", "endpoint", "status"])
+REQUEST_COUNT = Counter("coupon_service_requests_total", "HTTP requests", ["service", "method", "endpoint", "status"])
+REQUEST_LATENCY = Histogram("coupon_service_request_duration_seconds", "HTTP latency", ["service", "method", "endpoint", "status"])
 
 
 class ValidateRequest(BaseModel):
@@ -46,8 +47,14 @@ async def metrics_middleware(request, call_next):
         status = str(response.status_code)
     finally:
         elapsed = time.perf_counter() - started_at
-        REQUEST_LATENCY.labels(method=request.method, endpoint=request.url.path, status=status).observe(elapsed)
-        REQUEST_COUNT.labels(method=request.method, endpoint=request.url.path, status=status).inc()
+        labels = {
+            "service": SERVICE_NAME,
+            "method": request.method,
+            "endpoint": request.url.path,
+            "status": status,
+        }
+        REQUEST_LATENCY.labels(**labels).observe(elapsed)
+        REQUEST_COUNT.labels(**labels).inc()
     return response
 
 
@@ -63,7 +70,7 @@ def calculate_discount(promo: dict[str, Any], cart_total: float) -> float:
 async def health() -> dict[str, str]:
     return {
         "status": "ok",
-        "service": "coupon-service",
+        "service": SERVICE_NAME,
         "integrated_with": "frontend, checkoutservice",
     }
 
