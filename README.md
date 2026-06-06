@@ -60,7 +60,7 @@ Online-Boutique 是一个在线商店系统，包含前端、商品目录、购�
 | ------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | 王秀强 | 队长 / Online-Boutique 部署 / 总集成 / 智能运维设计 | 维护 GitHub 仓库；确定 Online-Boutique 主方案；部署主系统；统一命名、截图和结果文件；设计智能运维 Agent；整合 PDF 和 PPT                              | README、部署文档、命令记录、Pod 截图、Service 截图、前端页面截图、总架构图、报告主线、PPT 统稿、Agent 设计说明 |
 | 邓锦尧 | 新增微服务开发                                      | 开发 `coupon-service` 和 `inventory-service`；编写 Dockerfile 和 Kubernetes YAML；提供接口验证材料                                                    | FastAPI 源码、Dockerfile、Deployment YAML、Service YAML、接口测试截图                                          |
-| 邱俊杰 | Prometheus + Grafana + 监控看板                     | 部署监控组件；接入 Online-Boutique 和新增微服务；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板                              | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表                                                 |
+| 邱俊杰 | Prometheus + Grafana + 监控看板                     | 部署监控组件；接入 Online-Boutique、`coupon-service` 和 `inventory-service`；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板并导出 CSV | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表、normal/fault CSV                              |
 | 段坤良 | ChaosMesh + 故障实验                                | 部署 ChaosMesh；设计并执行 Pod Kill、CPU 压力、网络延迟、网络丢包等实验；记录故障时间、目标服务、系统现象和恢复情况                                   | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图                                                              |
 | 韦厚林 | Selenium + JMeter 测试                              | 使用 Selenium 模拟用户浏览商品、加入购物车、结账；使用 JMeter 进行 10/30/50/100 并发测试；记录响应时间、吞吐量和错误率                                | Selenium 脚本、JMeter JMX、测试结果表、性能测试截图                                                            |
 | 任泓旭 | 异常数据集 + 论文算法复现                           | 从 Prometheus 导出正常和故障数据；合并数据集；选择 KPI 异常检测或故障诊断论文；使用 Isolation Forest / PCA / One-Class SVM 做最小复现；输出异常检测图 | normal/fault CSV、merged_dataset.csv、算法代码、异常检测结果图、论文复现说明                                   |
@@ -455,7 +455,8 @@ kubectl describe deployment productcatalogservice -n online-boutique | findstr "
 4. 接入 `coupon-service` 和 `inventory-service`。
 5. 制作 Grafana 看板。
 6. 记录 PromQL 查询语句。
-7. 保存监控截图。
+7. 导出正常状态和故障状态监控 CSV。
+8. 保存监控截图。
 
 重点观察指标：
 
@@ -466,6 +467,33 @@ kubectl describe deployment productcatalogservice -n online-boutique | findstr "
 | Pod 状态   | 判断服务是否正常运行     |
 | 请求量     | 观察访问压力变化         |
 | 错误率     | 判断请求失败情况         |
+| 请求延迟   | 判断服务响应是否变慢     |
+| 网络流量   | 观察服务间通信变化       |
+
+输出材料：
+
+```text
+monitoring/
+figures/monitoring/prometheus_targets.png
+figures/monitoring/grafana_overview.png
+figures/monitoring/grafana_coupon_inventory.png
+figures/monitoring/grafana_fault_compare.png
+results/monitoring/promql_queries.md
+results/monitoring/metrics_description.md
+data/raw/normal_metrics.csv
+data/raw/fault_metrics_raw.csv
+docs/05_monitoring.md
+```
+
+常用命令：
+
+```bash
+bash scripts/deploy_monitoring.sh
+bash scripts/port_forward_prometheus.sh
+bash scripts/port_forward_grafana.sh
+python3 scripts/export_monitoring_metrics.py --scenario normal_traffic --output data/raw/normal_metrics.csv
+python3 scripts/export_monitoring_metrics.py --scenario fault_traffic --output data/raw/fault_metrics_raw.csv
+```
 | 请求延迟   | 判断服务响应是否变慢     |
 | 网络流量   | 观察服务间通信变化       |
 
@@ -604,7 +632,7 @@ inventory-service 指标
 
 ```text
 data/raw/normal_metrics.csv
-data/raw/fault_metrics.csv
+data/raw/fault_metrics_raw.csv
 data/processed/merged_dataset.csv
 data/labels/fault_labels.csv
 ```
@@ -726,7 +754,7 @@ algo: add isolation forest baseline
 | Online-Boutique 部署  | 王秀强          | 已完成，本地页面可访问                                                     |
 | 新增微服务            | 邓锦尧          | 已完成，`coupon-service` 与 `inventory-service` 均已部署并验证             |
 | 新增服务接入          | 王秀强 / 邓锦尧 | 已完成，已向 frontend、checkoutservice、productcatalogservice 注入服务地址 |
-| Prometheus + Grafana  | 邱俊杰          | 待开始                                                                     |
+| Prometheus + Grafana  | 邱俊杰          | 进行中，已补充监控部署、Dashboard、PromQL、CSV 导出与截图留证路径          |
 | ChaosMesh             | 段坤良          | 待开始                                                                     |
 | Selenium + JMeter     | 韦厚林          | 待开始                                                                     |
 | 异常数据集 + 论文算法 | 任泓旭          | 待开始                                                                     |

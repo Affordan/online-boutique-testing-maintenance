@@ -1,0 +1,3 @@
+timestamp,experiment_id,service,pod,scenario,cpu_usage,memory_usage_mb,restart_count,request_rate,error_rate,avg_latency_ms,p95_latency_ms,throughput,http_2xx_rate,http_4xx_rate,http_5xx_rate,network_receive_bytes,network_transmit_bytes
+2026-06-05 23:32:46,EXP_001,coupon-service,coupon-service-8474cdddd5-p772j,normal_traffic,0.003981480854865123,35.84765625,0,0.6383254828651695,0.0,1.7173820879216883,5.562499999999987,0.6383254828651695,0.6383254828651695,0.0,0.0,0.0,0.0
+2026-06-05 23:32:46,EXP_001,inventory-service,inventory-service-67f6654cfc-jtzjc,normal_traffic,0.003924581612692892,35.9921875,0,0.625521274024335,0.0,1.3918787000082489,4.858972055535495,0.625521274024335,0.6255273251822598,0.0,0.0,0.0,0.0

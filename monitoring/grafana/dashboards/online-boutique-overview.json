@@ -161,7 +161,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"online-boutique\", container!=\"\", image!=\"\"}[5m]))",
+          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"online-boutique\"}[5m]))",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
@@ -247,7 +247,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"online-boutique\", container!=\"\", image!=\"\"})",
+          "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"online-boutique\"})",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
@@ -510,7 +510,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (service) (rate(http_requests_total{namespace=\"online-boutique\"}[5m]))",
+          "expr": "sum by (service) (rate({__name__=~\"coupon_service_requests_total|inventory_service_requests_total\", namespace=\"online-boutique\"}[5m]))",
           "legendFormat": "{{service}}",
           "refId": "A"
         }
@@ -596,7 +596,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (service) (rate(http_requests_total{namespace=\"online-boutique\", status=~\"5..\"}[5m])) / sum by (service) (rate(http_requests_total{namespace=\"online-boutique\"}[5m]))",
+          "expr": "sum by (service) (rate({__name__=~\"coupon_service_requests_total|inventory_service_requests_total\", namespace=\"online-boutique\", status=~\"4..|5..\"}[5m])) / sum by (service) (rate({__name__=~\"coupon_service_requests_total|inventory_service_requests_total\", namespace=\"online-boutique\"}[5m]))",
           "legendFormat": "{{service}}",
           "refId": "A"
         }
@@ -682,7 +682,7 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum by (le, service) (rate(http_request_duration_seconds_bucket{namespace=\"online-boutique\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le, service) (rate({__name__=~\"coupon_service_request_duration_seconds_bucket|inventory_service_request_duration_seconds_bucket\", namespace=\"online-boutique\"}[5m])))",
           "legendFormat": "{{service}}",
           "refId": "A"
         }

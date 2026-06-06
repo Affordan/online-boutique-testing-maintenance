@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime, timezone
 from typing import Any
 
@@ -11,6 +12,7 @@ app = FastAPI(title="inventory-service", version="1.0.0", description="Inventory
 
 PRODUCT_CATALOG_ADDR = os.getenv("PRODUCT_CATALOG_SERVICE_ADDR", "productcatalogservice:3550")
 CHECKOUT_SERVICE_ADDR = os.getenv("CHECKOUT_SERVICE_ADDR", "checkoutservice:5050")
+SERVICE_NAME = "inventory-service"
 
 DEFAULT_STOCK = int(os.getenv("DEFAULT_STOCK", "100"))
 
@@ -24,8 +26,8 @@ inventory: dict[str, dict[str, Any]] = {
 
 reservations: dict[str, dict[str, Any]] = {}
 
-REQUEST_COUNT = Counter("inventory_service_requests_total", "HTTP requests", ["method", "endpoint"])
-REQUEST_LATENCY = Histogram("inventory_service_request_duration_seconds", "HTTP latency")
+REQUEST_COUNT = Counter("inventory_service_requests_total", "HTTP requests", ["service", "method", "endpoint", "status"])
+REQUEST_LATENCY = Histogram("inventory_service_request_duration_seconds", "HTTP latency", ["service", "method", "endpoint", "status"])
 
 
 class ReserveRequest(BaseModel):
@@ -46,9 +48,21 @@ class SyncRequest(BaseModel):
 
 @app.middleware("http")
 async def metrics_middleware(request, call_next):
-    with REQUEST_LATENCY.time():
+    started_at = time.perf_counter()
+    status = "500"
+    try:
         response = await call_next(request)
-    REQUEST_COUNT.labels(method=request.method, endpoint=request.url.path).inc()
+        status = str(response.status_code)
+    finally:
+        elapsed = time.perf_counter() - started_at
+        labels = {
+            "service": SERVICE_NAME,
+            "method": request.method,
+            "endpoint": request.url.path,
+            "status": status,
+        }
+        REQUEST_LATENCY.labels(**labels).observe(elapsed)
+        REQUEST_COUNT.labels(**labels).inc()
     return response
 
 
@@ -60,7 +74,7 @@ def available_stock(item: dict[str, Any]) -> int:
 async def health() -> dict[str, str]:
     return {
         "status": "ok",
-        "service": "inventory-service",
+        "service": SERVICE_NAME,
         "integrated_with": "productcatalogservice, checkoutservice",
     }
 
