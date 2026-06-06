@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-inventory-f002
+  namespace: chaos-mesh
+spec:
+  action: pod-kill
+  mode: one
+  duration: 10m
+  selector:
+    namespaces:
+      - online-boutique
+    labelSelectors:
+      app: inventory-service
