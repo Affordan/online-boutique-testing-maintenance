@@ -1,0 +1,9 @@
+fault_id,fault_type,target_service,start_time,end_time,duration_minutes,scenario
+F001,pod_kill,coupon-service,2026-06-06 12:48:39,2026-06-06 12:58:39,10,chaos_experiment
+F002,pod_kill,inventory-service,2026-06-06 14:21:21,2026-06-06 14:31:21,10,chaos_experiment
+F003,cpu_stress,coupon-service,2026-06-06 14:58:00,2026-06-06 15:13:00,15,chaos_experiment
+F004,network_delay,inventory-service,2026-06-06 15:24:27,2026-06-06 15:39:27,15,chaos_experiment
+F005,network_delay,coupon-service,2026-06-06 15:45:46,2026-06-06 16:00:46,15,chaos_experiment
+F006,cpu_stress,inventory-service,2026-06-06 16:10:00,2026-06-06 16:25:00,15,chaos_experiment
+F007,network_loss,coupon-service,2026-06-07 01:00:00,2026-06-07 01:10:00,10,chaos_experiment
+F008,network_loss,inventory-service,2026-06-07 01:15:00,2026-06-07 01:25:00,10,chaos_experiment

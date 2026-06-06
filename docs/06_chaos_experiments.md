@@ -1,18 +1,18 @@
-# ChaosMesh ¹ÊÕÏ×¢ÈëÊµÑé¼ÇÂ¼
+ï»¿# ChaosMesh ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½Êµï¿½ï¿½ï¿½Â¼
 
-±¾ÎÄ¼ÇÂ¼ Online-Boutique Î¢·şÎñÏµÍ³ÖĞÊ¹ÓÃ ChaosMesh ½øĞĞµÄ¹ÊÕÏ×¢ÈëÊµÑé¡£
+ï¿½ï¿½ï¿½Ä¼ï¿½Â¼ Online-Boutique Î¢ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½Ê¹ï¿½ï¿½ ChaosMesh ï¿½ï¿½ï¿½ĞµÄ¹ï¿½ï¿½ï¿½×¢ï¿½ï¿½Êµï¿½é¡£
 
-## 1. Ä¿±ê
+## 1. Ä¿ï¿½ï¿½
 
-Ê¹ÓÃ ChaosMesh ¶ÔÏµÍ³½øĞĞ¹ÊÕÏ×¢ÈëÊµÑé£¬ÑéÖ¤ÏµÍ³ÔÚÒÔÏÂ¹ÊÕÏ³¡¾°ÏÂµÄĞĞÎª£º
+Ê¹ï¿½ï¿½ ChaosMesh ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½Ğ¹ï¿½ï¿½ï¿½×¢ï¿½ï¿½Êµï¿½é£¬ï¿½ï¿½Ö¤ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½Â¹ï¿½ï¿½Ï³ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½Îªï¿½ï¿½
 
-1. **Pod Kill** ¡ª É±ËÀÄ¿±ê·şÎñ Pod£¬ÑéÖ¤ Kubernetes ×Ô¶¯»Ö¸´ÄÜÁ¦¡£
-2. **CPU Stress** ¡ª ¶ÔÄ¿±ê·şÎñ×¢Èë CPU Ñ¹Á¦£¬¹Û²ìĞÔÄÜÓ°Ïì¡£
-3. **Network Delay** ¡ª ¶ÔÄ¿±ê·şÎñ×¢ÈëÍøÂçÑÓ³Ù£¬ÑéÖ¤·şÎñ¼äµ÷ÓÃµÄÈİ´íĞÔ¡£
+1. **Pod Kill** ï¿½ï¿½ É±ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ Podï¿½ï¿½ï¿½ï¿½Ö¤ Kubernetes ï¿½Ô¶ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+2. **CPU Stress** ï¿½ï¿½ ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ CPU Ñ¹ï¿½ï¿½ï¿½ï¿½ï¿½Û²ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ì¡£
+3. **Network Delay** ï¿½ï¿½ ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³Ù£ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½İ´ï¿½ï¿½Ô¡ï¿½
 
-## 2. Ç°ÖÃÌõ¼ş
+## 2. Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-²¿Êğ ChaosMesh Ç°ÏÈÈ·ÈÏ£º
+ï¿½ï¿½ï¿½ï¿½ ChaosMesh Ç°ï¿½ï¿½È·ï¿½Ï£ï¿½
 
 `ash
 bash scripts/check_env.sh
@@ -21,11 +21,11 @@ bash scripts/deploy_online_boutique.sh
 kubectl get pods -n online-boutique
 `
 
-È·ÈÏËùÓĞ·şÎñ Pod ´¦ÓÚ Running ×´Ì¬¡£
+È·ï¿½ï¿½ï¿½ï¿½ï¿½Ğ·ï¿½ï¿½ï¿½ Pod ï¿½ï¿½ï¿½ï¿½ Running ×´Ì¬ï¿½ï¿½
 
-## 3. °²×° ChaosMesh
+## 3. ï¿½ï¿½×° ChaosMesh
 
-Ê¹ÓÃ Helm °²×° ChaosMesh£º
+Ê¹ï¿½ï¿½ Helm ï¿½ï¿½×° ChaosMeshï¿½ï¿½
 
 `ash
 helm repo add chaos-mesh https://charts.chaos-mesh.org
@@ -34,68 +34,77 @@ kubectl create ns chaos-mesh
 helm install chaos-mesh chaos-mesh/chaos-mesh -n chaos-mesh --version 2.7.0
 `
 
-ÑéÖ¤ ChaosMesh ×é¼şÔËĞĞ×´Ì¬£º
+ï¿½ï¿½Ö¤ ChaosMesh ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½
 
 `ash
 kubectl get pods -n chaos-mesh
 `
 
-## 4. ÊµÑéÉè¼Æ
+## 4. Êµï¿½ï¿½ï¿½ï¿½ï¿½
 
-¹²Éè¼Æ 6 ¸ö¹ÊÕÏ×¢ÈëÊµÑé£¬¸²¸Ç 3 ÖÖ¹ÊÕÏÀàĞÍ x 2 ¸öÄ¿±ê·şÎñ£º
+ï¿½ï¿½ï¿½ï¿½ï¿½ 6 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½Êµï¿½é£¬ï¿½ï¿½ï¿½ï¿½ 3 ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ x 2 ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
 
-| ÊµÑé±àºÅ | ¹ÊÕÏÀàĞÍ | Ä¿±ê·şÎñ | ÅäÖÃÎÄ¼ş |
+| Êµï¿½ï¿½ï¿½ï¿½ | ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ | Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ | ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ |
 |---------|---------|---------|---------|
 | F001 | Pod Kill | coupon-service | chaos/chaos_pod_kill_coupon.yaml |
 | F002 | Pod Kill | inventory-service | chaos/chaos_pod_kill_inventory.yaml |
 | F003 | CPU Stress | coupon-service | chaos/chaos_cpu_stress_coupon.yaml |
 | F004 | Network Delay | inventory-service | chaos/chaos_network_delay_inventory.yaml |
 | F005 | Network Delay | coupon-service | chaos/chaos_network_delay_coupon.yaml |
-| F006 | CPU Stress | inventory-service | chaos/chaos_cpu_stress_inventory.yaml |
+| F006 | CPU Stress | inventory-service | âœ… Completed |
+| F007 | Network Loss | coupon-service | âœ… Completed |
+| F008 | Network Loss | inventory-service | âœ… Completed |
 
-## 5. ÊµÑéÖ´ĞĞ²½Öè
+## 5. Êµï¿½ï¿½Ö´ï¿½Ğ²ï¿½ï¿½ï¿½
 
-### 5.1 Í¨ÓÃ²½Öè
+### 5.1 Í¨ï¿½Ã²ï¿½ï¿½ï¿½
 
-Ã¿¸öÊµÑé°´ÒÔÏÂ²½ÖèÖ´ĞĞ£º
+Ã¿ï¿½ï¿½Êµï¿½é°´ï¿½ï¿½ï¿½Â²ï¿½ï¿½ï¿½Ö´ï¿½Ğ£ï¿½
 
-1. Ó¦ÓÃÊµÑéÅäÖÃ£º\kubectl apply -f chaos/<config-file>.yaml\
-2. ÑéÖ¤ÊµÑé×´Ì¬£º\kubectl get <chaos-type> -n chaos-mesh\
-3. ²é¿´ÊµÑéÏêÇé£º\kubectl describe <chaos-type> <experiment-name> -n chaos-mesh\
-4. È·ÈÏ×¢Èë³É¹¦£¨AllInjected: True£©
-5. ÇåÀíÊµÑé£º\kubectl delete <chaos-type> <experiment-name> -n chaos-mesh\
+1. Ó¦ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½\kubectl apply -f chaos/<config-file>.yaml\
+2. ï¿½ï¿½Ö¤Êµï¿½ï¿½×´Ì¬ï¿½ï¿½\kubectl get <chaos-type> -n chaos-mesh\
+3. ï¿½é¿´Êµï¿½ï¿½ï¿½ï¿½ï¿½é£º\kubectl describe <chaos-type> <experiment-name> -n chaos-mesh\
+4. È·ï¿½ï¿½×¢ï¿½ï¿½É¹ï¿½ï¿½ï¿½AllInjected: Trueï¿½ï¿½
+5. ï¿½ï¿½ï¿½ï¿½Êµï¿½é£º\kubectl delete <chaos-type> <experiment-name> -n chaos-mesh\
 
-### 5.2 ×¢ÒâÊÂÏî
+### 5.2 ×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-- µ±Ç° ChaosMesh °æ±¾µÄ PodChaos¡¢StressChaos¡¢NetworkChaos ¾ù²»Ö§³Ö spec.scheduler ×Ö¶Î£¬Ğè´Ó YAML ÖĞÒÆ³ı¡£
-- NetworkChaos µÄ correlation ×Ö¶ÎĞèÊ¹ÓÃ×Ö·û´®ÀàĞÍ£¨Èç \"50"\£©¶ø·ÇÊı×ÖÀàĞÍ¡£
-- ÊµÑé×¢Èë³É¹¦ºóÎŞĞèµÈ´ıÍêÕû duration£¬¿ÉËæÊ±ÊÖ¶¯ÇåÀí¡£
+- ï¿½ï¿½Ç° ChaosMesh ï¿½æ±¾ï¿½ï¿½ PodChaosï¿½ï¿½StressChaosï¿½ï¿½NetworkChaos ï¿½ï¿½ï¿½ï¿½Ö§ï¿½ï¿½ spec.scheduler ï¿½Ö¶Î£ï¿½ï¿½ï¿½ï¿½ YAML ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½
+- NetworkChaos ï¿½ï¿½ correlation ï¿½Ö¶ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ \"50"\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¡ï¿½
+- Êµï¿½ï¿½×¢ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ durationï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-## 6. ÊµÑé½á¹û
+## 6. Êµï¿½ï¿½ï¿½ï¿½
 
-ÊµÑé½á¹ûÏêÇé¼û \esults/chaos/experiment_results.md\£¬½ØÍ¼¼û \igures/chaos/\¡£
+Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ \esults/chaos/experiment_results.md\ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ \igures/chaos/\ï¿½ï¿½
 
-## 7. ½ØÍ¼Çåµ¥
+## 7. ï¿½ï¿½Í¼ï¿½åµ¥
 
-| ÎÄ¼ş | ËµÃ÷ |
+| ï¿½Ä¼ï¿½ | Ëµï¿½ï¿½ |
 |------|------|
-| screenshot_01_all_pods_running.png | ³õÊ¼×´Ì¬ - ËùÓĞ Pod ÔËĞĞÖĞ |
-| screenshot_02_chaosmesh_pods.png | ChaosMesh ×é¼ş Pod |
-| screenshot_03_f001_yaml.png | F001 YAML ÅäÖÃÄÚÈİ |
-| screenshot_04_f001_applied.png | F001 ´´½¨³É¹¦ |
-| screenshot_05_f001_describe.png | F001 ÊµÑéÏêÇé |
-| screenshot_06_f002_describe.png | F002 ÊµÑéÏêÇé |
-| screenshot_07_f002_recovered.png | F002 »Ö¸´×´Ì¬ |
-| screenshot_08_f002_deleted.png | F002 ÇåÀíÍê³É |
-| screenshot_09_f003_applied.png | F003 ´´½¨³É¹¦ |
-| screenshot_10_f003_describe.png | F003 ÊµÑéÏêÇé |
-| screenshot_11_f003_deleted.png | F003 ÇåÀíÍê³É |
-| screenshot_12_f004_applied.png | F004 ´´½¨³É¹¦ |
-| screenshot_13_f004_describe.png | F004 ÊµÑéÏêÇé |
-| screenshot_14_f004_deleted.png | F004 ÇåÀíÍê³É |
-| screenshot_15_f005_applied.png | F005 ´´½¨³É¹¦ |
-| screenshot_16_f005_describe.png | F005 ÊµÑéÏêÇé |
-| screenshot_17_f005_deleted.png | F005 ÇåÀíÍê³É |
-| screenshot_18_f006_applied.png | F006 ´´½¨³É¹¦ |
-| screenshot_19_f006_describe.png | F006 ÊµÑéÏêÇé |
-| screenshot_20_f006_deleted.png | F006 ÇåÀíÍê³É |
+| screenshot_01_all_pods_running.png | ï¿½ï¿½Ê¼×´Ì¬ - ï¿½ï¿½ï¿½ï¿½ Pod ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_02_chaosmesh_pods.png | ChaosMesh ï¿½ï¿½ï¿½ Pod |
+| screenshot_03_f001_yaml.png | F001 YAML ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_04_f001_applied.png | F001 ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ |
+| screenshot_05_f001_describe.png | F001 Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_06_f002_describe.png | F002 Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_07_f002_recovered.png | F002 ï¿½Ö¸ï¿½×´Ì¬ |
+| screenshot_08_f002_deleted.png | F002 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_09_f003_applied.png | F003 ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ |
+| screenshot_10_f003_describe.png | F003 Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_11_f003_deleted.png | F003 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_12_f004_applied.png | F004 ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ |
+| screenshot_13_f004_describe.png | F004 Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_14_f004_deleted.png | F004 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_15_f005_applied.png | F005 ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ |
+| screenshot_16_f005_describe.png | F005 Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_17_f005_deleted.png | F005 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_18_f006_applied.png | F006 ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ |
+| screenshot_19_f006_describe.png | F006 Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_20_f006_deleted.png | F006 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ |
+| screenshot_21_f007_applied.png | F007 åˆ›å»ºæˆåŠŸ |
+| screenshot_22_f007_describe.png | F007 å®éªŒè¯¦æƒ… |
+| screenshot_23_f007_deleted.png | F007 æ¸…ç†å®Œæˆ |
+| screenshot_24_f008_applied.png | F008 åˆ›å»ºæˆåŠŸ |
+| screenshot_25_f008_describe.png | F008 å®éªŒè¯¦æƒ… |
+| screenshot_26_f008_deleted.png | F008 æ¸…ç†å®Œæˆ |
+

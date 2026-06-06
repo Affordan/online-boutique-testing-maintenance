@@ -1,6 +1,6 @@
-# Chaos Experiment Results
+﻿# Chaos Experiment Results
 
-> experiments/figures/chaos ��¼
+> experiments/figures/chaos ��¼
 
 ## F001 - Pod Kill (coupon-service)
 
@@ -254,3 +254,47 @@ Events:
 | F006 | CPU Stress | inventory-service | ? Completed |
 
 All 6 chaos experiments were successfully executed and cleaned up. Experiment screenshots are saved in igures/chaos/.
+---
+
+## F007 - Network Loss (coupon-service)
+
+**Command:** `kubectl apply -f chaos/chaos_network_loss_coupon.yaml`
+
+**Config:**
+- Kind: NetworkChaos
+- Action: loss
+- Target: coupon-service (app: coupon-service)
+- Loss: 50%, Correlation: 50%
+- Duration: 10m
+
+**Result:** 50% packet loss injected to coupon-service Pod successfully. ✅
+
+---
+
+## F008 - Network Loss (inventory-service)
+
+**Command:** `kubectl apply -f chaos/chaos_network_loss_inventory.yaml`
+
+**Config:**
+- Kind: NetworkChaos
+- Action: loss
+- Target: inventory-service (app: inventory-service)
+- Loss: 50%, Correlation: 50%
+- Duration: 10m
+
+**Result:** 50% packet loss injected to inventory-service Pod successfully. ✅
+
+---
+
+## Summary
+
+| Experiment | Type | Target | Status |
+|------------|------|--------|--------|
+| F001 | Pod Kill | coupon-service | ✅ Completed |
+| F002 | Pod Kill | inventory-service | ✅ Completed |
+| F003 | CPU Stress | coupon-service | ✅ Completed |
+| F004 | Network Delay (3s) | inventory-service | ✅ Completed |
+| F005 | Network Delay (3s) | coupon-service | ✅ Completed |
+| F006 | CPU Stress | inventory-service | ✅ Completed |
+| F007 | Network Loss (50%) | coupon-service | ✅ Completed |
+| F008 | Network Loss (50%) | inventory-service | ✅ Completed |

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-loss-inventory-f008
+  namespace: chaos-mesh
+spec:
+  action: loss
+  mode: one
+  duration: 10m
+  selector:
+    namespaces:
+      - online-boutique
+    labelSelectors:
+      app: inventory-service
+  loss:
+    loss: "50"
+    correlation: "50"
