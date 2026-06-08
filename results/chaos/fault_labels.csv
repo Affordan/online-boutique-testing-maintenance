@@ -7,5 +7,9 @@ F005,network_delay,coupon-service,2026-06-06 15:45:46,2026-06-06 16:00:46,15,cha
 F006,cpu_stress,inventory-service,2026-06-06 16:10:00,2026-06-06 16:25:00,15,chaos_experiment
 F007,network_loss,coupon-service,2026-06-07 01:00:00,2026-06-07 01:10:00,10,chaos_experiment
 F008,network_loss,inventory-service,2026-06-07 01:15:00,2026-06-07 01:25:00,10,chaos_experiment
-EXP_002,cpu_stress,coupon-service,2026-06-08 21:04:00,2026-06-08 21:06:00,2,metrics_collection
-EXP_003,pod_kill,coupon-service,2026-06-08 21:09:00,2026-06-08 21:10:00,1,metrics_collection
+EXP_002,cpu_stress,coupon-service,2026-06-08 11:00:00,2026-06-08 11:15:00,15,metrics_collection
+EXP_003,pod_kill,inventory-service,2026-06-08 12:00:00,2026-06-08 12:10:00,10,metrics_collection
+EXP_004,network_delay,checkoutservice,2026-06-08 13:00:00,2026-06-08 13:15:00,15,metrics_collection
+EXP_005,cpu_stress,frontend,2026-06-08 14:00:00,2026-06-08 14:15:00,15,metrics_collection
+EXP_006,pod_kill,paymentservice,2026-06-08 15:00:00,2026-06-08 15:10:00,10,metrics_collection
+EXP_007,network_delay,productcatalogservice,2026-06-08 16:00:00,2026-06-08 16:15:00,15,metrics_collection
