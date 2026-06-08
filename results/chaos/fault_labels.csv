@@ -7,3 +7,5 @@ F005,network_delay,coupon-service,2026-06-06 15:45:46,2026-06-06 16:00:46,15,cha
 F006,cpu_stress,inventory-service,2026-06-06 16:10:00,2026-06-06 16:25:00,15,chaos_experiment
 F007,network_loss,coupon-service,2026-06-07 01:00:00,2026-06-07 01:10:00,10,chaos_experiment
 F008,network_loss,inventory-service,2026-06-07 01:15:00,2026-06-07 01:25:00,10,chaos_experiment
+EXP_002,cpu_stress,coupon-service,2026-06-08 21:04:00,2026-06-08 21:06:00,2,metrics_collection
+EXP_003,pod_kill,coupon-service,2026-06-08 21:09:00,2026-06-08 21:10:00,1,metrics_collection
