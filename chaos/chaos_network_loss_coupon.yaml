@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-loss-coupon-f007
+  namespace: chaos-mesh
+spec:
+  action: loss
+  mode: one
+  duration: 10m
+  selector:
+    namespaces:
+      - online-boutique
+    labelSelectors:
+      app: coupon-service
+  loss:
+    loss: "50"
+    correlation: "50"
