@@ -1,0 +1,8 @@
+normal_metrics: data/raw/normal_metrics.csv
+fault_metrics: data/raw/fault_metrics.csv
+output_dir: results/agent
+default_cases:
+  - inventory_network_delay
+  - coupon_cpu_stress
+  - frontend_pod_kill
+safe_mode: true

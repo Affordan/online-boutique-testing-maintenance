@@ -1,0 +1,25 @@
+frontend:
+  downstream:
+    - checkoutservice
+    - productcatalogservice
+    - cartservice
+    - recommendationservice
+checkoutservice:
+  downstream:
+    - paymentservice
+    - shippingservice
+    - emailservice
+    - cartservice
+coupon-service:
+  downstream:
+    - frontend
+    - checkoutservice
+inventory-service:
+  downstream:
+    - frontend
+    - productcatalogservice
+    - checkoutservice
+productcatalogservice:
+  downstream:
+    - frontend
+    - recommendationservice

@@ -63,7 +63,7 @@ Online-Boutique 是一个在线商店系统，包含前端、商品目录、购�
 | 邓锦尧 | 新增微服务开发                                      | 开发 `coupon-service` 和 `inventory-service`；编写 Dockerfile 和 Kubernetes YAML；提供接口验证材料                                                    | FastAPI 源码、Dockerfile、Deployment YAML、Service YAML、接口测试截图                                          |
 | 邱俊杰 | Prometheus + Grafana + 监控看板 / 数据采集           | 部署监控组件；接入 Online-Boutique、`coupon-service` 和 `inventory-service`；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板；参与 normal/fault 指标采集与数据校验 | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表、normal/fault/all CSV、数据统计表              |
 | 段坤良 | ChaosMesh + 故障实验 / 数据采集                     | 部署 ChaosMesh；设计并执行 Pod Kill、CPU 压力、内存压力、网络延迟等实验；记录故障时间、目标服务、系统现象和恢复情况；参与 fault 窗口标注与数据校验        | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图、fault 阶段标注                                             |
-| 韦厚林 | Selenium + JMeter 测试                              | 使用 Selenium 模拟用户浏览商品、加入购物车、结账；使用 JMeter 进行 10/30/50/100 并发测试；记录响应时间、吞吐量和错误率                                | Selenium 脚本、JMeter JMX、测试结果表、性能测试截图                                                            |
+| 韦厚林 | Selenium + JMeter 测试                              | 已完成 Selenium 功能测试和 JMeter 10/30/50/100 并发性能测试；记录响应时间、吞吐量和错误率，并整理测试结果                                        | Selenium 脚本、JMeter JMX、测试结果表、性能测试截图                                                            |
 | 任泓旭 | 论文算法复现与异常检测分析                          | 使用已交付的 normal/fault/all 数据集；选择 KPI 异常检测或故障诊断论文；使用 Isolation Forest / PCA / One-Class SVM 做最小复现；输出异常检测图           | 算法代码、异常检测结果图、论文复现说明                                                                        |
 
 ---
@@ -688,17 +688,17 @@ docs/08_algorithm.md
 
 智能运维部分由王秀强负责总体设计，结合监控、故障、测试和算法结果完成演示版本。
 
-Agent 的目标是把已有实验结果组织成可查询、可分析、可展示的运维辅助工具。它可以读取监控数据、查看服务状态、调用异常检测算法，并输出简短诊断结果。
+Agent 的目标是把已有实验结果组织成可查询、可分析、可展示的运维辅助工具。它可以读取监控数据、查看服务状态、执行规则化异常检测，并输出简短诊断结果。
 
-计划能力：
+已实现能力：
 
 | 能力         | 数据来源                | 输出                            |
 | ------------ | ----------------------- | ------------------------------- |
-| 查询系统状态 | Kubernetes / Prometheus | 当前服务是否正常                |
-| 查看异常指标 | Prometheus              | CPU、内存、延迟、错误率异常情况 |
-| 对照故障时间 | ChaosMesh 实验记录      | 异常是否与故障注入一致          |
-| 调用检测算法 | algorithms/             | 异常时间点和异常分数            |
-| 生成诊断摘要 | 监控、故障、算法结果    | 可能异常服务、证据、处理建议    |
+| 查询系统状态 | 监控 CSV / Kubernetes 候选命令 | 当前服务是否正常                |
+| 查看异常指标 | normal/fault metrics CSV | CPU、内存、延迟、错误率异常情况 |
+| 对照故障时间 | `fault_type` / `fault_phase` 标注 | 异常是否与故障注入一致          |
+| 根因分类 | 规则化 AIOps Agent | pod_kill / cpu_stress / memory_stress / network_delay / service_error |
+| 生成诊断摘要 | 监控、故障、拓扑结果 | 可能异常服务、证据、处理建议    |
 
 示例输出：
 
@@ -713,7 +713,6 @@ ChaosMesh 记录显示同一时间段存在网络延迟实验。
 
 ```text
 agent/
-figures/agent/
 results/agent/
 docs/09_agent_ops.md
 ```
@@ -768,9 +767,9 @@ algo: add isolation forest baseline
 | 新增服务接入          | 王秀强 / 邓锦尧 | 已完成，已向 frontend、checkoutservice、productcatalogservice 注入服务地址 |
 | Prometheus + Grafana  | 邱俊杰          | 已完成，已补充监控部署、Dashboard、PromQL、CSV 导出与截图留证路径          |
 | ChaosMesh             | 段坤良          | 已完成，已补充故障配置、故障阶段和实验结果记录                             |
-| Selenium + JMeter     | 韦厚林          | 待开始                                                                     |
+| Selenium + JMeter     | 韦厚林          | 已完成，已补充 Selenium 功能测试、JMeter 性能测试和结果记录                 |
 | 异常数据集 + 论文算法 | 王秀强 / 邱俊杰 / 段坤良 / 任泓旭 | 数据集已交付，算法复现待继续完善                                |
-| 智能运维 Agent        | 王秀强          | 待设计                                                                     |
+| 智能运维 Agent        | 王秀强          | 已完成，已实现异常检测、根因分类和诊断报告生成                               |
 | 报告 PDF              | 全组            | 后期整合                                                                   |
 | 展示 PPT              | 全组            | 后期整合                                                                   |
 
@@ -801,4 +800,4 @@ algo: add isolation forest baseline
 
 本项目强调可复现和可验证。每个模块都需要保留命令、配置、截图和结果文件，避免只保留口头说明。最终报告和 PPT 将以仓库内容为基础进行整理，所有实验材料都应放入对应目录，便于统一检查和后续汇报。
 
-当前主系统、两个新增微服务、监控看板、故障实验和算法研究数据集已经完成阶段性验收。后续工作将继续补充 Selenium/JMeter 测试结果、异常检测算法结果和智能运维演示内容。
+当前主系统、两个新增微服务、监控看板、故障实验、Selenium/JMeter 测试、算法研究数据集和智能运维 Agent 已经完成阶段性验收。后续工作将继续补充异常检测算法复现结果和最终报告/PPT 整理。

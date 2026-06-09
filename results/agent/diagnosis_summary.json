@@ -1,0 +1,135 @@
+{
+  "diagnoses": [
+    {
+      "service": "coupon-service",
+      "root_cause": "pod_kill",
+      "severity": "high",
+      "score": 21.0704,
+      "evidence": [
+        "restart_count 从正常均值 0.0000 上升为 0.1213",
+        "error_rate 从正常均值 0.0011 上升到 0.0139，约为正常的 12.63 倍",
+        "avg_latency_ms 从正常均值 1.1940 上升到 1.7901，约为正常的 1.50 倍",
+        "p90_latency_ms 从正常均值 1.8793 上升到 3.3545，约为正常的 1.78 倍",
+        "p95_latency_ms 从正常均值 2.2731 上升到 4.7644，约为正常的 2.10 倍",
+        "p99_latency_ms 从正常均值 3.1106 上升到 7.9561，约为正常的 2.56 倍",
+        "throughput 从正常均值 333.0306 下降到 294.0801，约为正常的 0.88 倍",
+        "http_5xx_rate 从正常均值 0.0599 上升到 3.3322，约为正常的 55.65 倍",
+        "异常阶段与故障窗口 `during_fault` 匹配"
+      ],
+      "recommendations": [
+        "确认 coupon-service Deployment 副本数和重启次数",
+        "检查是否存在 ChaosMesh PodChaos 或节点资源驱逐",
+        "检查 coupon-service Pod 状态、事件和最近日志",
+        "对照 Grafana 看板确认故障结束后指标是否回落"
+      ],
+      "affected_services": [
+        "frontend",
+        "checkoutservice"
+      ],
+      "candidate_commands": [
+        "kubectl get pods -n online-boutique -l app=coupon-service",
+        "kubectl logs -n online-boutique deploy/coupon-service --tail=80",
+        "kubectl describe deployment coupon-service -n online-boutique",
+        "# 人工确认后可选: kubectl rollout restart deployment/coupon-service -n online-boutique"
+      ]
+    },
+    {
+      "service": "frontend",
+      "root_cause": "network_delay",
+      "severity": "high",
+      "score": 20.8404,
+      "evidence": [
+        "error_rate 从正常均值 0.0011 上升到 0.0096，约为正常的 8.69 倍",
+        "avg_latency_ms 从正常均值 18.0740 上升到 37.2369，约为正常的 2.06 倍",
+        "p90_latency_ms 从正常均值 28.4665 上升到 71.5367，约为正常的 2.51 倍",
+        "p95_latency_ms 从正常均值 34.3432 上升到 107.5956，约为正常的 3.13 倍",
+        "p99_latency_ms 从正常均值 47.0103 上升到 188.1967，约为正常的 4.00 倍",
+        "throughput 从正常均值 476.9630 下降到 420.5349，约为正常的 0.88 倍",
+        "http_5xx_rate 从正常均值 0.0858 上升到 3.8094，约为正常的 44.38 倍",
+        "异常阶段与故障窗口 `during_fault` 匹配"
+      ],
+      "recommendations": [
+        "检查 frontend 与上下游服务之间的网络延迟",
+        "核对 ChaosMesh NetworkChaos 配置和服务调用链路",
+        "检查 frontend Pod 状态、事件和最近日志",
+        "对照 Grafana 看板确认故障结束后指标是否回落"
+      ],
+      "affected_services": [
+        "checkoutservice",
+        "productcatalogservice",
+        "cartservice",
+        "recommendationservice"
+      ],
+      "candidate_commands": [
+        "kubectl get pods -n online-boutique -l app=frontend",
+        "kubectl logs -n online-boutique deploy/frontend --tail=80",
+        "kubectl describe deployment frontend -n online-boutique",
+        "# 人工确认后可选: kubectl rollout restart deployment/frontend -n online-boutique"
+      ]
+    },
+    {
+      "service": "checkoutservice",
+      "root_cause": "memory_stress",
+      "severity": "high",
+      "score": 18.2848,
+      "evidence": [
+        "error_rate 从正常均值 0.0011 上升到 0.0088，约为正常的 8.08 倍",
+        "avg_latency_ms 从正常均值 48.2724 上升到 79.3429，约为正常的 1.64 倍",
+        "p90_latency_ms 从正常均值 76.0839 上升到 151.7600，约为正常的 1.99 倍",
+        "p95_latency_ms 从正常均值 91.6658 上升到 224.2274，约为正常的 2.45 倍",
+        "p99_latency_ms 从正常均值 125.3891 上升到 385.5486，约为正常的 3.07 倍",
+        "throughput 从正常均值 132.0125 下降到 117.2841，约为正常的 0.89 倍",
+        "http_5xx_rate 从正常均值 0.0226 上升到 0.9454，约为正常的 41.87 倍",
+        "异常阶段与故障窗口 `during_fault` 匹配"
+      ],
+      "recommendations": [
+        "检查 checkoutservice 内存 limit/request 和 OOMKilled 事件",
+        "观察内存曲线是否持续上升，必要时扩大内存限制",
+        "检查 checkoutservice Pod 状态、事件和最近日志",
+        "对照 Grafana 看板确认故障结束后指标是否回落"
+      ],
+      "affected_services": [
+        "paymentservice",
+        "shippingservice",
+        "emailservice",
+        "cartservice"
+      ],
+      "candidate_commands": [
+        "kubectl get pods -n online-boutique -l app=checkoutservice",
+        "kubectl logs -n online-boutique deploy/checkoutservice --tail=80",
+        "kubectl describe deployment checkoutservice -n online-boutique",
+        "# 人工确认后可选: kubectl rollout restart deployment/checkoutservice -n online-boutique"
+      ]
+    },
+    {
+      "service": "productcatalogservice",
+      "root_cause": "cpu_stress",
+      "severity": "high",
+      "score": 12.6623,
+      "evidence": [
+        "avg_latency_ms 从正常均值 6.5217 上升到 10.4483，约为正常的 1.60 倍",
+        "p90_latency_ms 从正常均值 10.2708 上升到 19.5190，约为正常的 1.90 倍",
+        "p95_latency_ms 从正常均值 12.3947 上升到 28.5756，约为正常的 2.31 倍",
+        "p99_latency_ms 从正常均值 16.9627 上升到 48.4161，约为正常的 2.85 倍",
+        "http_5xx_rate 从正常均值 0.0514 上升到 0.3586，约为正常的 6.98 倍",
+        "异常阶段与故障窗口 `during_fault` 匹配"
+      ],
+      "recommendations": [
+        "检查 productcatalogservice CPU limit/request 和容器 CPU 使用率",
+        "降低压测流量或扩容对应 Deployment 后观察延迟是否恢复",
+        "检查 productcatalogservice Pod 状态、事件和最近日志",
+        "对照 Grafana 看板确认故障结束后指标是否回落"
+      ],
+      "affected_services": [
+        "frontend",
+        "recommendationservice"
+      ],
+      "candidate_commands": [
+        "kubectl get pods -n online-boutique -l app=productcatalogservice",
+        "kubectl logs -n online-boutique deploy/productcatalogservice --tail=80",
+        "kubectl describe deployment productcatalogservice -n online-boutique",
+        "# 人工确认后可选: kubectl rollout restart deployment/productcatalogservice -n online-boutique"
+      ]
+    }
+  ]
+}
