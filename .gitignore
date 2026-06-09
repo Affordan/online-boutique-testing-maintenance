@@ -36,3 +36,5 @@ data/**/*.zip
 data/**/*.tar
 data/**/*.tar.gz
 
+# temp files
+tmp/
