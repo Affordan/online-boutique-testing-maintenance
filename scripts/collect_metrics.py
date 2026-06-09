@@ -24,7 +24,7 @@ def run_kubectl(args):
     return result.stdout
 
 def get_pod_data():
-    \"\"\"从kubectl获取pod信息\"\"\"
+    """从kubectl获取pod信息"""
     output = run_kubectl(['get', 'pods', '-n', 'online-boutique', '-o', 'json'])
     if not output:
         return {}
@@ -40,7 +40,7 @@ def get_pod_data():
     return pods
 
 def parse_metrics(text):
-    \"\"\"解析Prometheus文本格式的metrics\"\"\"
+    """解析Prometheus文本格式的metrics"""
     result = {}
     for line in text.strip().split('\n'):
         if line.startswith('#') or not line.strip():
@@ -59,7 +59,7 @@ def parse_metrics(text):
     return result
 
 def scrape_metrics(url):
-    \"\"\"采集服务的/metrics端点\"\"\"
+    """采集服务的/metrics端点"""
     req = Request(url, headers={'Accept': 'text/plain'})
     try:
         with urlopen(req, timeout=10) as resp:
@@ -68,27 +68,28 @@ def scrape_metrics(url):
         return {}
 
 def collect_snapshot(experiment_id, scenario):
-    \"\"\"采集一次快照数据\"\"\"
+    """采集一次快照数据"""
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     pods = get_pod_data()
-    
+
     # 采集 coupon-service metrics
     coupon_metrics = scrape_metrics('http://localhost:18081/metrics')
     inventory_metrics = scrape_metrics('http://localhost:18082/metrics')
-    
+
     rows = []
     for pod_name, info in pods.items():
         service = info['service']
         if service not in ('coupon-service', 'inventory-service'):
             continue
-        
+
         metrics = coupon_metrics if service == 'coupon-service' else inventory_metrics
-        
+
         # 解析请求数据
-        requests_total = metrics.get(f'{service.replace(\"-\", \"_\")}_requests_total', 0)
-        duration_count = metrics.get(f'{service.replace(\"-\", \"_\")}_request_duration_seconds_count', 0)
-        duration_sum = metrics.get(f'{service.replace(\"-\", \"_\")}_request_duration_seconds_sum', 0)
-        
+        metric_prefix = service.replace('-', '_')
+        requests_total = metrics.get(f'{metric_prefix}_requests_total', 0)
+        duration_count = metrics.get(f'{metric_prefix}_request_duration_seconds_count', 0)
+        duration_sum = metrics.get(f'{metric_prefix}_request_duration_seconds_sum', 0)
+
         row = {
             'timestamp': timestamp,
             'experiment_id': experiment_id,
@@ -110,7 +111,7 @@ def collect_snapshot(experiment_id, scenario):
             'network_transmit_bytes': 0.0,
         }
         rows.append(row)
-    
+
     return rows
 
 def main():
@@ -134,7 +135,7 @@ def main():
         writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
         writer.writeheader()
         writer.writerows(all_rows)
-    
+
     print(f'Wrote {len(all_rows)} rows to {args.output}')
 
 if __name__ == '__main__':

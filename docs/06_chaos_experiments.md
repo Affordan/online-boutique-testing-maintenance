@@ -107,4 +107,3 @@ kubectl get pods -n chaos-mesh
 | screenshot_24_f008_applied.png | F008 创建成功 |
 | screenshot_25_f008_describe.png | F008 实验详情 |
 | screenshot_26_f008_deleted.png | F008 清理完成 |
-
