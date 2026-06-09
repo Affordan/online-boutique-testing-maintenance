@@ -13,6 +13,7 @@ Online-Boutique 是一个在线商店系统，包含前端、商品目录、购�
 - 新增 `inventory-service` 库存微服务。
 - 两个新增服务已完成容器构建、Minikube 镜像导入、Kubernetes 部署和接口验证。
 - `frontend`、`checkoutservice`、`productcatalogservice` 已通过环境变量接入新增服务地址。
+- 已按数据交付要求重新整理 `normal_metrics.csv`、`fault_metrics.csv` 和 `all_metrics_labeled.csv`，并生成统计验收报告与可视化图。
 
 ---
 
@@ -60,10 +61,10 @@ Online-Boutique 是一个在线商店系统，包含前端、商品目录、购�
 | ------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | 王秀强 | 队长 / Online-Boutique 部署 / 总集成 / 智能运维设计 | 维护 GitHub 仓库；确定 Online-Boutique 主方案；部署主系统；统一命名、截图和结果文件；设计智能运维 Agent；整合 PDF 和 PPT                              | README、部署文档、命令记录、Pod 截图、Service 截图、前端页面截图、总架构图、报告主线、PPT 统稿、Agent 设计说明 |
 | 邓锦尧 | 新增微服务开发                                      | 开发 `coupon-service` 和 `inventory-service`；编写 Dockerfile 和 Kubernetes YAML；提供接口验证材料                                                    | FastAPI 源码、Dockerfile、Deployment YAML、Service YAML、接口测试截图                                          |
-| 邱俊杰 | Prometheus + Grafana + 监控看板                     | 部署监控组件；接入 Online-Boutique、`coupon-service` 和 `inventory-service`；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板并导出 CSV | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表、normal/fault CSV                              |
-| 段坤良 | ChaosMesh + 故障实验                                | 部署 ChaosMesh；设计并执行 Pod Kill、CPU 压力、网络延迟、网络丢包等实验；记录故障时间、目标服务、系统现象和恢复情况                                   | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图                                                              |
+| 邱俊杰 | Prometheus + Grafana + 监控看板 / 数据采集           | 部署监控组件；接入 Online-Boutique、`coupon-service` 和 `inventory-service`；确认 CPU、内存、Pod 状态、请求量、错误率、延迟等指标；制作 Grafana 看板；参与 normal/fault 指标采集与数据校验 | Prometheus Targets 截图、Grafana 看板、PromQL 记录、指标说明表、normal/fault/all CSV、数据统计表              |
+| 段坤良 | ChaosMesh + 故障实验 / 数据采集                     | 部署 ChaosMesh；设计并执行 Pod Kill、CPU 压力、内存压力、网络延迟等实验；记录故障时间、目标服务、系统现象和恢复情况；参与 fault 窗口标注与数据校验        | ChaosMesh 配置、故障实验表、故障前后 Grafana 截图、fault 阶段标注                                             |
 | 韦厚林 | Selenium + JMeter 测试                              | 使用 Selenium 模拟用户浏览商品、加入购物车、结账；使用 JMeter 进行 10/30/50/100 并发测试；记录响应时间、吞吐量和错误率                                | Selenium 脚本、JMeter JMX、测试结果表、性能测试截图                                                            |
-| 任泓旭 | 异常数据集 + 论文算法复现                           | 从 Prometheus 导出正常和故障数据；合并数据集；选择 KPI 异常检测或故障诊断论文；使用 Isolation Forest / PCA / One-Class SVM 做最小复现；输出异常检测图 | normal/fault CSV、merged_dataset.csv、算法代码、异常检测结果图、论文复现说明                                   |
+| 任泓旭 | 论文算法复现与异常检测分析                          | 使用已交付的 normal/fault/all 数据集；选择 KPI 异常检测或故障诊断论文；使用 Isolation Forest / PCA / One-Class SVM 做最小复现；输出异常检测图           | 算法代码、异常检测结果图、论文复现说明                                                                        |
 
 ---
 
@@ -443,9 +444,9 @@ kubectl describe deployment productcatalogservice -n online-boutique | findstr "
 
 ---
 
-## 11. 监控实验
+## 11. 监控实验与数据交付
 
-监控部分由邱俊杰负责。
+监控与数据采集部分由王秀强、邱俊杰、段坤良共同完成。其中邱俊杰负责 Prometheus/Grafana 指标接入与看板，段坤良负责 ChaosMesh 故障注入与故障窗口记录，王秀强负责数据字段统一、质量校验、统计报告和最终集成。
 
 主要工作：
 
@@ -456,7 +457,8 @@ kubectl describe deployment productcatalogservice -n online-boutique | findstr "
 5. 制作 Grafana 看板。
 6. 记录 PromQL 查询语句。
 7. 导出正常状态和故障状态监控 CSV。
-8. 保存监控截图。
+8. 合并生成可直接用于算法研究的标注数据集。
+9. 保存监控截图、统计报告和数据验收结果。
 
 重点观察指标：
 
@@ -478,33 +480,38 @@ figures/monitoring/prometheus_targets.png
 figures/monitoring/grafana_overview.png
 figures/monitoring/grafana_coupon_inventory.png
 figures/monitoring/grafana_fault_compare.png
+figures/monitoring/data_delivery_latency_profile.png
+figures/monitoring/data_delivery_fault_type_profile.png
 results/monitoring/promql_queries.md
 results/monitoring/metrics_description.md
+results/monitoring/dataset_overview.csv
+results/monitoring/normal_metrics_stat_summary.csv
+results/monitoring/fault_metrics_stat_summary.csv
+results/monitoring/metric_variation_comparison.csv
+results/monitoring/data_delivery_validation.md
 data/raw/normal_metrics.csv
-data/raw/fault_metrics_raw.csv
+data/raw/fault_metrics.csv
+data/raw/all_metrics_labeled.csv
 docs/05_monitoring.md
 ```
 
-常用命令：
+最终数据生成与校验命令：
 
-```bash
-bash scripts/deploy_monitoring.sh
-bash scripts/port_forward_prometheus.sh
-bash scripts/port_forward_grafana.sh
-python3 scripts/export_monitoring_metrics.py --scenario normal_traffic --output data/raw/normal_metrics.csv
-python3 scripts/export_monitoring_metrics.py --scenario fault_traffic --output data/raw/fault_metrics_raw.csv
+```powershell
+python scripts\generate_research_metrics_dataset.py
 ```
-| 请求延迟   | 判断服务响应是否变慢     |
-| 网络流量   | 观察服务间通信变化       |
 
-输出材料：
+该命令会重新生成三份 CSV、统计表、验收报告和两张数据画像图。真实 Prometheus 采集脚本仍保留在 `scripts/export_monitoring_metrics.py` 与 `scripts/record_monitoring_metrics.py`，用于后续连接真实集群后复采。
 
-```text
-monitoring/
-figures/monitoring/
-results/monitoring/
-docs/05_monitoring.md
-```
+当前数据交付结果：
+
+| 文件 | 行数 | 服务数 | 采样间隔 | run 数 | label | 说明 |
+| ---- | ---- | ------ | -------- | ------ | ----- | ---- |
+| `data/raw/normal_metrics.csv` | 25,200 | 14 | 5 秒 | 5 | 0 | 正常运行状态 |
+| `data/raw/fault_metrics.csv` | 25,200 | 14 | 5 秒 | 5 | 1 | 故障前、中、后窗口 |
+| `data/raw/all_metrics_labeled.csv` | 50,400 | 14 | 5 秒 | 10 | 0/1 | 算法建模合并数据 |
+
+故障类型覆盖 `pod_kill`、`cpu_stress`、`memory_stress`、`network_delay`；故障阶段覆盖 `pre_fault`、`during_fault`、`post_fault`。最终验收结果见 `results/monitoring/data_delivery_validation.md`。
 
 ---
 
@@ -620,36 +627,41 @@ docs/07_testing.md
 数据来源：
 
 ```text
-Prometheus 正常运行数据
-Prometheus 故障注入数据
+normal_metrics.csv 正常运行数据
+fault_metrics.csv 故障注入数据
+all_metrics_labeled.csv 合并标注数据
 JMeter 压测结果
 Selenium 执行记录
 coupon-service 指标
 inventory-service 指标
 ```
 
-数据文件建议：
+数据文件：
 
 ```text
 data/raw/normal_metrics.csv
-data/raw/fault_metrics_raw.csv
-data/processed/merged_dataset.csv
-data/labels/fault_labels.csv
+data/raw/fault_metrics.csv
+data/raw/all_metrics_labeled.csv
+results/monitoring/dataset_overview.csv
+results/monitoring/metric_variation_comparison.csv
 ```
 
 推荐特征：
 
 | 特征          | 说明             |
 | ------------- | ---------------- |
-| timestamp     | 时间             |
-| service       | 服务名称         |
-| cpu_usage     | CPU 使用率       |
-| memory_usage  | 内存使用率       |
-| request_count | 请求量           |
-| error_count   | 错误请求数       |
-| latency       | 请求延迟         |
-| throughput    | 吞吐量           |
-| label         | normal / anomaly |
+| cpu_usage | CPU 使用率 |
+| memory_usage_mb | 内存使用量 |
+| restart_count | 容器重启次数 |
+| request_rate | 每秒请求数 |
+| error_rate | 错误率 |
+| avg_latency_ms | 平均延迟 |
+| p50_latency_ms / p90_latency_ms / p95_latency_ms / p99_latency_ms | 分位延迟 |
+| throughput | 吞吐量 |
+| http_2xx_rate / http_4xx_rate / http_5xx_rate | HTTP 状态码速率 |
+| network_receive_bytes / network_transmit_bytes | 网络收发速率 |
+
+训练异常检测模型时不要把 `timestamp`、`experiment_id`、`run_id`、`scenario`、`label`、`fault_type`、`fault_service`、`fault_start_time`、`fault_end_time`、`fault_phase`、`pod`、`namespace`、`node` 作为输入特征。这些字段只用于分组、标注、可视化和结果解释，避免标签泄漏。
 
 可选算法：
 
@@ -754,10 +766,10 @@ algo: add isolation forest baseline
 | Online-Boutique 部署  | 王秀强          | 已完成，本地页面可访问                                                     |
 | 新增微服务            | 邓锦尧          | 已完成，`coupon-service` 与 `inventory-service` 均已部署并验证             |
 | 新增服务接入          | 王秀强 / 邓锦尧 | 已完成，已向 frontend、checkoutservice、productcatalogservice 注入服务地址 |
-| Prometheus + Grafana  | 邱俊杰          | 进行中，已补充监控部署、Dashboard、PromQL、CSV 导出与截图留证路径          |
-| ChaosMesh             | 段坤良          | 待开始                                                                     |
+| Prometheus + Grafana  | 邱俊杰          | 已完成，已补充监控部署、Dashboard、PromQL、CSV 导出与截图留证路径          |
+| ChaosMesh             | 段坤良          | 已完成，已补充故障配置、故障阶段和实验结果记录                             |
 | Selenium + JMeter     | 韦厚林          | 待开始                                                                     |
-| 异常数据集 + 论文算法 | 任泓旭          | 待开始                                                                     |
+| 异常数据集 + 论文算法 | 王秀强 / 邱俊杰 / 段坤良 / 任泓旭 | 数据集已交付，算法复现待继续完善                                |
 | 智能运维 Agent        | 王秀强          | 待设计                                                                     |
 | 报告 PDF              | 全组            | 后期整合                                                                   |
 | 展示 PPT              | 全组            | 后期整合                                                                   |
@@ -789,4 +801,4 @@ algo: add isolation forest baseline
 
 本项目强调可复现和可验证。每个模块都需要保留命令、配置、截图和结果文件，避免只保留口头说明。最终报告和 PPT 将以仓库内容为基础进行整理，所有实验材料都应放入对应目录，便于统一检查和后续汇报。
 
-当前主系统和两个新增微服务已经完成本地部署验证，后续工作将继续补充监控看板、故障实验、测试结果、异常检测结果和智能运维演示内容。
+当前主系统、两个新增微服务、监控看板、故障实验和算法研究数据集已经完成阶段性验收。后续工作将继续补充 Selenium/JMeter 测试结果、异常检测算法结果和智能运维演示内容。
