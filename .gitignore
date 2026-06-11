@@ -38,3 +38,10 @@ data/**/*.tar.gz
 
 # temp files
 tmp/
+
+# Report build workspace: keep only final PDFs under pdf/
+pdf/**
+!pdf/
+!pdf/*.pdf
+ppt/**
+!ppt/*.pptx
