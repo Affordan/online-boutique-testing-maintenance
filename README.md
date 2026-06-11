@@ -14,6 +14,8 @@ Online-Boutique 是一个在线商店系统，包含前端、商品目录、购�
 - 两个新增服务已完成容器构建、Minikube 镜像导入、Kubernetes 部署和接口验证。
 - `frontend`、`checkoutservice`、`productcatalogservice` 已通过环境变量接入新增服务地址。
 - 已按数据交付要求重新整理 `normal_metrics.csv`、`fault_metrics.csv` 和 `all_metrics_labeled.csv`，并生成统计验收报告与可视化图。
+- 论文算法复现已完成，当前保留 DA-VAE 异常检测、KPIRoot 根因定位代码、论文材料、输出图和结论说明。
+- 报告 PDF 与展示 PPT 已预留独立目录，后续可直接基于 README、截图和实验结果整理成稿。
 
 ---
 
@@ -74,14 +76,10 @@ Online-Boutique 是一个在线商店系统，包含前端、商品目录、购�
 online-boutique-testing-maintenance/
 ├── README.md
 ├── docs/
-│   ├── 01_environment.md
 │   ├── 02_deployment.md
-│   ├── 03_team_division.md
-│   ├── 04_common_errors.md
 │   ├── 05_monitoring.md
 │   ├── 06_chaos_experiments.md
 │   ├── 07_testing.md
-│   ├── 08_algorithm.md
 │   └── 09_agent_ops.md
 │
 ├── scripts/
@@ -125,17 +123,25 @@ online-boutique-testing-maintenance/
 │
 ├── data/
 ├── algorithms/
+│   ├── article/
+│   ├── code/
+│   ├── results_DAVAE/
+│   ├── result_KPIroot0/
+│   └── conclusion.txt
 ├── agent/
 ├── figures/
 │   ├── deployment/
 │   ├── monitoring/
 │   ├── chaos/
 │   ├── testing/
-│   └── algorithm/
+│   ├── microservices/
+│   └── agent/
 │
 ├── results/
 ├── report/
-└── ppt/
+├── pdf/
+├── slides/
+└── pptx/
 ```
 
 | 目录          | 内容                                              |
@@ -148,12 +154,14 @@ online-boutique-testing-maintenance/
 | `chaos/`      | ChaosMesh 故障实验配置                            |
 | `tests/`      | Selenium 功能测试脚本和 JMeter 性能测试文件       |
 | `data/`       | Prometheus 导出的原始数据、处理后数据和标签文件   |
-| `algorithms/` | 异常检测和故障诊断算法代码                        |
+| `algorithms/` | DA-VAE 异常检测、KPIRoot 根因定位代码、论文材料、输出图和结论 |
 | `agent/`      | 智能运维 Agent 代码                               |
 | `figures/`    | 报告和 PPT 使用的截图                             |
 | `results/`    | 实验结果表、算法输出、测试结果                    |
-| `report/`     | 大作业 PDF 报告材料                               |
-| `ppt/`        | 展示 PPT 材料                                     |
+| `report/`     | 报告引用材料和论文参考文件                        |
+| `pdf/`        | PDF 报告源码、插图工作区和最终 PDF                |
+| `slides/`     | PPT 文字大纲、讲稿或素材说明                      |
+| `pptx/`       | 最终展示 PPTX 文件                                |
 
 ---
 
@@ -622,7 +630,7 @@ docs/07_testing.md
 
 ## 14. 异常数据集与论文算法复现
 
-算法部分由任泓旭负责。
+算法部分由任泓旭负责，当前主线算法内容已完成。仓库中保留了 DA-VAE 异常检测与 KPIRoot 根因定位两条复现路径，分别用于服务级异常识别和故障根因排序分析。
 
 数据来源：
 
@@ -663,23 +671,28 @@ results/monitoring/metric_variation_comparison.csv
 
 训练异常检测模型时不要把 `timestamp`、`experiment_id`、`run_id`、`scenario`、`label`、`fault_type`、`fault_service`、`fault_start_time`、`fault_end_time`、`fault_phase`、`pod`、`namespace`、`node` 作为输入特征。这些字段只用于分组、标注、可视化和结果解释，避免标签泄漏。
 
-可选算法：
+已复现算法：
 
-| 算法             | 说明                           |
-| ---------------- | ------------------------------ |
-| Isolation Forest | 适合做基础异常检测             |
-| PCA              | 适合观察多指标偏离             |
-| One-Class SVM    | 适合单类异常检测               |
-| LSTM AutoEncoder | 适合时间序列异常检测，难度更高 |
+| 算法 | 论文材料 | 代码 | 输出 |
+| ---- | -------- | ---- | ---- |
+| DA-VAE | `algorithms/article/WWW24-DA-VAE.pdf` | `algorithms/code/DA_VAE.py` | `algorithms/results_DAVAE/` |
+| KPIRoot | `algorithms/article/ISSRE24-KPIRoot.pdf` | `algorithms/code/KPIroot.py` | `algorithms/result_KPIroot0/` |
+
+当前结论：
+
+- DA-VAE 能够基于正常样本训练服务级模型，并在故障窗口中通过重构误差识别异常服务。
+- KPIRoot 能够对全链路服务进行根因得分排序，适合用于展示故障传播和候选根因定位过程。
+- 算法评估与优化建议已整理在 `algorithms/conclusion.txt`，可直接作为 PDF 报告和 PPT 的算法章节素材。
 
 输出材料：
 
 ```text
-algorithms/
+algorithms/article/
+algorithms/code/
+algorithms/results_DAVAE/
+algorithms/result_KPIroot0/
+algorithms/conclusion.txt
 data/
-figures/algorithm/
-results/algorithm/
-docs/08_algorithm.md
 ```
 
 ---
@@ -768,10 +781,10 @@ algo: add isolation forest baseline
 | Prometheus + Grafana  | 邱俊杰          | 已完成，已补充监控部署、Dashboard、PromQL、CSV 导出与截图留证路径          |
 | ChaosMesh             | 段坤良          | 已完成，已补充故障配置、故障阶段和实验结果记录                             |
 | Selenium + JMeter     | 韦厚林          | 已完成，已补充 Selenium 功能测试、JMeter 性能测试和结果记录                 |
-| 异常数据集 + 论文算法 | 王秀强 / 邱俊杰 / 段坤良 / 任泓旭 | 数据集已交付，算法复现待继续完善                                |
+| 异常数据集 + 论文算法 | 王秀强 / 邱俊杰 / 段坤良 / 任泓旭 | 已完成，已交付 normal/fault/all 数据集，并完成 DA-VAE 与 KPIRoot 复现结果 |
 | 智能运维 Agent        | 王秀强          | 已完成，已实现异常检测、根因分类和诊断报告生成                               |
-| 报告 PDF              | 全组            | 后期整合                                                                   |
-| 展示 PPT              | 全组            | 后期整合                                                                   |
+| 报告 PDF              | 全组            | 已建立 `pdf/` 工作目录，下一阶段进入正式成稿和排版                           |
+| 展示 PPT              | 全组            | 已建立 `slides/` 与 `pptx/` 目录，下一阶段进入展示材料整理                   |
 
 ---
 
@@ -790,8 +803,8 @@ algo: add isolation forest baseline
 8. 正常数据、故障数据和合并后的异常数据集。
 9. 论文算法复现代码和检测结果。
 10. 智能运维 Agent 代码和演示结果。
-11. 大作业实验报告 PDF。
-12. 展示 PPT。
+11. 大作业实验报告 PDF，最终文件放入 `pdf/`。
+12. 展示 PPT，最终文件放入 `pptx/`，素材和讲稿放入 `slides/`。
 ```
 
 ---
@@ -800,4 +813,4 @@ algo: add isolation forest baseline
 
 本项目强调可复现和可验证。每个模块都需要保留命令、配置、截图和结果文件，避免只保留口头说明。最终报告和 PPT 将以仓库内容为基础进行整理，所有实验材料都应放入对应目录，便于统一检查和后续汇报。
 
-当前主系统、两个新增微服务、监控看板、故障实验、Selenium/JMeter 测试、算法研究数据集和智能运维 Agent 已经完成阶段性验收。后续工作将继续补充异常检测算法复现结果和最终报告/PPT 整理。
+当前主系统、两个新增微服务、监控看板、故障实验、Selenium/JMeter 测试、算法研究数据集、DA-VAE/KPIRoot 论文算法复现和智能运维 Agent 已经完成阶段性验收。后续工作重点转入最终 PDF 报告和 PPT 展示材料整理。
